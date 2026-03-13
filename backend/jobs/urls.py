@@ -1,9 +1,10 @@
 from django.urls import path
 
-from .endpoints import ListJobsView, JobDetailView, DeleteJobView
+from .endpoints import ListJobsView, EditJobView, JobDetailView, DeleteJobView
 
 urlpatterns = [
     path("", ListJobsView.as_view(), name="list-jobs"),
     path("<int:job_id>/", JobDetailView.as_view(), name="job-detail"),
-    path("<int:job_id>/delete/", DeleteJobView.as_view(), name="delete-job"),
+    path("/edit/<int:job_id>", EditJobView.as_view(), name="edit-job"),
+    path("/delete/<int:job_id>", DeleteJobView.as_view(), name="delete-job"),
 ]

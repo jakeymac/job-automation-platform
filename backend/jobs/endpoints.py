@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.decorators import login_required
 
 from drf_spectacular.utils import extend_schema
 
@@ -12,9 +13,13 @@ from .serializers import JobSerializer
     summary="List all jobs",
     description="Returns all jobs currently."
 )
+@login_required
 class ListJobsView(APIView):
     def get(self, request):
-        jobs = Job.objects.all()
+        if request.user.is_staff:
+            jobs = Job.objects.all()
+        else:
+            jobs = Job.objects.filter(owner=request.user)
         serializer = JobSerializer(jobs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -23,10 +28,14 @@ class ListJobsView(APIView):
     summary="Get job details",
     description="Returns details of a specific job by its ID."
 )
+@login_required
 class JobDetailView(APIView):
     def get(self, request, job_id):
         try:
-            job = Job.objects.get(id=job_id)
+            if request.user.is_staff:
+                job = Job.objects.get(id=job_id)
+            else:
+                job = Job.objects.get(id=job_id, owner=request.user)
             serializer = JobSerializer(job)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Job.DoesNotExist:
@@ -34,13 +43,37 @@ class JobDetailView(APIView):
         
 
 @extend_schema(
+    summary="Edit a job",
+    description="Edits a specific job by its ID."
+)
+@login_required
+class EditJobView(APIView):
+    def put(self, request, job_id):
+        try:
+            if request.user.is_staff:
+                job = Job.objects.get(id=job_id)
+            else:
+                job = Job.objects.get(id=job_id, owner=request.user)
+            serializer = JobSerializer(job, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Job.DoesNotExist:
+            return Response({"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@extend_schema(
     summary="Delete a job",
     description="Deletes a specific job by its ID."
 )
+@login_required
 class DeleteJobView(APIView):
     def delete(self, request, job_id):
         try:
-            job = Job.objects.get(id=job_id)
+            if request.user.is_staff:
+                job = Job.objects.get(id=job_id)
+            else:
+                job = Job.objects.get(id=job_id, owner=request.user)
             job.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Job.DoesNotExist:
