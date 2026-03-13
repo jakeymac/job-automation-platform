@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.decorators import login_required
+from rest_framework.permissions import IsAuthenticated
 
 from drf_spectacular.utils import extend_schema
 
@@ -13,8 +13,9 @@ from .serializers import JobSerializer
     summary="List all jobs",
     description="Returns all jobs currently."
 )
-@login_required
 class ListJobsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         if request.user.is_staff:
             jobs = Job.objects.all()
@@ -28,8 +29,9 @@ class ListJobsView(APIView):
     summary="Get job details",
     description="Returns details of a specific job by its ID."
 )
-@login_required
 class JobDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, job_id):
         try:
             if request.user.is_staff:
@@ -46,8 +48,9 @@ class JobDetailView(APIView):
     summary="Edit a job",
     description="Edits a specific job by its ID."
 )
-@login_required
 class EditJobView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def put(self, request, job_id):
         try:
             if request.user.is_staff:
@@ -66,8 +69,8 @@ class EditJobView(APIView):
     summary="Delete a job",
     description="Deletes a specific job by its ID."
 )
-@login_required
 class DeleteJobView(APIView):
+    permission_classes = [IsAuthenticated]
     def delete(self, request, job_id):
         try:
             if request.user.is_staff:
