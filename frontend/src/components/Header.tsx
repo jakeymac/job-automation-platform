@@ -5,28 +5,24 @@ export default function Header() {
   const { isAuthenticated, logout } = useAuth()
 
   return (
-    <header
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "16px 40px",
-        borderBottom: "1px solid #ddd",
-      }}
-    >
-      <Link to="/" style={{ fontWeight: "bold" }}>
-        Job Automation
-      </Link>
+    <header className="header">
+      <div className="header-left">
+        <Link to="/" className="logo">
+          Job Automation
+        </Link>
 
-      <nav style={{ display: "flex", gap: "20px" }}>
+      </div>
+      
+      <nav className="nav">
         {isAuthenticated ? (
           <>
             <Link to="/">Dashboard</Link>
-            <button onClick={logout}>Logout</button>
+            <button onClick={logout} className="logout-btn">Logout</button>
           </>
         ) : (
           <>
             <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
+            <Link to="/register" className="register-btn">Register</Link>
           </>
         )}
       </nav>
