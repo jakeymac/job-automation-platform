@@ -183,3 +183,51 @@ main {
     transform: rotate(360deg);
   }
 }
+
+/* Dashboard */
+.dashboard {
+  padding: 40px;
+  text-align: left;
+}
+
+.jobs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.jobs-table th {
+  text-align: left;
+  background: #f3f4f6;
+  padding: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.jobs-table td {
+  padding: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.jobs-table tr:hover {
+  background: #f9fafb;
+}
+
+.jobs-table tr:last-child td {
+  border-bottom: none;
+}
+
+.jobs-table button {
+  margin-right: 8px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}

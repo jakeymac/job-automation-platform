@@ -7,7 +7,8 @@ import { apiFetch } from "../api/client"
 interface Job {
   id: number
   name: string
-  description: string
+  schedule: string
+  is_active: boolean
 }
 
 export default function JobsPage() {
@@ -41,18 +42,31 @@ export default function JobsPage() {
   }
 
   return (
-    <div>
-      <h2>Jobs</h2>
+    <div className="dashboard">
+      <h1>Jobs</h1>
 
-      {jobs.length === 0 && <p>No jobs yet.</p>}
+      <table className="jobs-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Schedule</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-      <ul>
-        {jobs.map((job) => (
-          <li key={job.id}>
-            <strong>{job.name}</strong> — {job.description}
-          </li>
-        ))}
-      </ul>
+        <tbody>
+          {jobs.map((job) => (
+            <tr key={job.id}>
+              <td>{job.name}</td>
+              <td>{job.schedule}</td>
+              <td>
+                <button>Run</button>
+                <button>Edit</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
