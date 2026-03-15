@@ -26,7 +26,11 @@ export default function ViewJobDetails() {
     async function loadJob() {
       try {
         const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/`)
+        if (!response.ok) {
+          throw new Error("Failed to load job")
+        }
         const data = await response.json()
+        
         setJob(data)
       } catch {
         console.error("Failed to load job")
@@ -39,11 +43,11 @@ export default function ViewJobDetails() {
   }, [id])
 
   if (loading) {
-    return <div className="dashboard">Loading job...</div>
+    return <div className="job-details-page">Loading job...</div>
   }
 
   if (!job) {
-    return <div className="dashboard">Job not found</div>
+    return <div className="job-details-page">Job not found</div>
   }
 
   return (

@@ -51,7 +51,8 @@ class JobDetailView(APIView):
 class EditJobView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request, job_id):
+    def patch(self, request, job_id):
+        breakpoint()
         try:
             if request.user.is_staff:
                 job = Job.objects.get(id=job_id)
