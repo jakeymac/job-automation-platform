@@ -43,7 +43,7 @@ export default function LoginPage() {
         <h2>Login</h2>
         <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit" disabled={loading} className="login-btn">
+        <button type="submit" disabled={loading} className="auth-submit-btn">
           {loading ? <span className="spinner"></span> : "Login"}
         </button>
       </form>

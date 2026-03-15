@@ -138,6 +138,48 @@ main {
   border: 1px solid #d1d5db;
 }
 
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-wrapper input {
+  width: 100%;
+}
+
+.input-spinner {
+  position: absolute;
+  right: 10px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(37, 99, 235, 0.3);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.input-check {
+  position: absolute;
+  right: 10px;
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.input-error-icon {
+  position: absolute;
+  right: 10px;
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 14px;
+  text-align: left;
+  margin-top: -6px;
+}
+
 .auth-card input:focus {
   outline: none;
   border-color: #2563eb;
@@ -151,21 +193,28 @@ main {
   background: #2563eb;
   color: white;
   font-weight: 500;
-  cursor: pointer;
+
 }
 
-.auth-card button:hover {
-  background: #1d4ed8;
-}
+/* Loading spinner for login and register buttons */
 
-/* Loading spinner for login button */
-
-.login-btn {
+.auth-submit-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 40px;
   min-height: 40px;
+}
+
+.auth-submit-btn:not(:disabled):hover {
+  background: #1e40af;
+  cursor: pointer;
+}
+
+.auth-submit-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .spinner {
