@@ -308,10 +308,15 @@ main {
   padding-bottom: 12px;
 }
 
+.job-title-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .job-title {
   margin: 0;
 }
-
 
 .job-status-badge {
   padding: 4px 10px;

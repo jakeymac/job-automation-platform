@@ -55,20 +55,25 @@ export default function ViewJobDetails() {
     <div className="job-details-card">
 
       <div className="job-header">
-        <h1 className="job-title">{job.name}</h1>
+        <div className="job-title-group">
+          <h1 className="job-title">{job.name}</h1>
 
-        <div className="job-actions">
           <span className={`job-status-badge ${job.is_active ? "active" : "inactive"}`}>
             {job.is_active ? "Active" : "Inactive"}
           </span>
+        </div>
 
+        <div className="job-actions">
           <button
             className="job-edit-btn"
             onClick={() => navigate(`/jobs/${job.id}/edit`)}
           >
             Edit
           </button>
-          <button className="job-run-btn">Run</button>
+
+          <button className="job-run-btn">
+            Run
+          </button>
         </div>
       </div>
 
