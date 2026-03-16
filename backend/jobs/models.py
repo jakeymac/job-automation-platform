@@ -15,6 +15,10 @@ class Job(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    script_file = models.FileField(upload_to="job_scripts/", blank=True, null=True)
+    timeout_seconds = models.IntegerField(default=300)
+    allow_network = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name
 
@@ -32,7 +36,8 @@ class JobRun(models.Model):
     )
     exit_code = models.IntegerField(blank=True, null=True)
     log_file = models.FileField(upload_to="job_logs/", blank=True, null=True)
-    started_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField()
     finished_at = models.DateTimeField(blank=True, null=True)
     duration_seconds = models.FloatField(blank=True, null=True)
     triggered_by = models.ForeignKey(
