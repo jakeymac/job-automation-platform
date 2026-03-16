@@ -204,7 +204,7 @@ export default function RegisterPage() {
         )}
         
 
-        <button type="submit" disabled={!formValid} className="auth-submit-btn">
+        <button type="submit" disabled={!formValid} className="auth-submit-btn register-submit-btn">
           {loading ? <span className="spinner"></span> : "Register"}
         </button>
       </form>
