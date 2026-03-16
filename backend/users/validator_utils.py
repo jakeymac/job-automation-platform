@@ -1,13 +1,16 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 User = get_user_model()
 
 
-def validate_username(username):
-    """Validates that the username is at least 6 characters long, contains no spaces, and is not already taken.
-    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message will be an empty string.
+def validate_username_util(username):
+    """Validates that the username is at least 6 characters long, contains no spaces, 
+    and is not already taken.
+    
+    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message 
+    will be an empty string.
     """
     if len(username) < 6 or " " in username:
         return (
@@ -21,9 +24,11 @@ def validate_username(username):
     return True, ""
 
 
-def validate_email(email):
+def validate_email_util(email):
     """Validates that the email is in a valid format and is not already taken.
-    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message will be an empty string.
+
+    Returns a tuple of (is_valid, error_message). If is_valid is True, 
+    error_message will be an empty string.
     """
     try:
         validate_email(email)
@@ -36,9 +41,12 @@ def validate_email(email):
     return True, ""
 
 
-def validate_password(password):
-    """Validates that the password is at least 8 characters long and contains at least one number and one special character.
-    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message will be an empty string.
+def validate_password_util(password):
+    """Validates that the password is at least 8 characters long and contains at least
+      one number and one special character.
+    
+    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message 
+    will be an empty string.
     """
     if len(password) < 8 or " " in password:
         return (

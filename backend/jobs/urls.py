@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .endpoints import ListJobsView, EditJobView, JobDetailView, DeleteJobView
+from .endpoints import DeleteJobView, EditJobView, JobDetailView, ListJobsView
 
 urlpatterns = [
     path("", ListJobsView.as_view(), name="list-jobs"),

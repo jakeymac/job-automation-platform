@@ -1,14 +1,10 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
 from django.contrib.auth import get_user_model
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .serializers import UserSerializer
-
-from .validator_utils import validate_username, validate_email
+from .validator_utils import validate_email_util, validate_username_util
 
 User = get_user_model()
 
@@ -44,7 +40,7 @@ class IsUsernameValidView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        is_valid, error_message = validate_username(username)
+        is_valid, error_message = validate_username_util(username)
 
         if not is_valid:
             return Response(
@@ -68,7 +64,7 @@ class IsEmailValidView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        is_valid, error_message = validate_email(email)
+        is_valid, error_message = validate_email_util(email)
 
         if not is_valid:
             return Response(

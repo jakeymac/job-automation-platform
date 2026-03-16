@@ -1,5 +1,6 @@
 from django.urls import path
-from .endpoints import RegisterUserView, IsUsernameValidView, IsEmailValidView
+
+from .endpoints import IsEmailValidView, IsUsernameValidView, RegisterUserView
 
 urlpatterns = [
     path("register/", RegisterUserView.as_view(), name="register"),
