@@ -6,10 +6,10 @@ User = get_user_model()
 
 
 def validate_username_util(username):
-    """Validates that the username is at least 6 characters long, contains no spaces, 
+    """Validates that the username is at least 6 characters long, contains no spaces,
     and is not already taken.
-    
-    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message 
+
+    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message
     will be an empty string.
     """
     if len(username) < 6 or " " in username:
@@ -27,7 +27,7 @@ def validate_username_util(username):
 def validate_email_util(email):
     """Validates that the email is in a valid format and is not already taken.
 
-    Returns a tuple of (is_valid, error_message). If is_valid is True, 
+    Returns a tuple of (is_valid, error_message). If is_valid is True,
     error_message will be an empty string.
     """
     try:
@@ -44,8 +44,8 @@ def validate_email_util(email):
 def validate_password_util(password):
     """Validates that the password is at least 8 characters long and contains at least
       one number and one special character.
-    
-    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message 
+
+    Returns a tuple of (is_valid, error_message). If is_valid is True, error_message
     will be an empty string.
     """
     if len(password) < 8 or " " in password:

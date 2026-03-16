@@ -24,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
         return user
+
     def validate_username(self, value):
         is_valid, error_message = validate_username_util(value)
         if not is_valid:
