@@ -10,8 +10,8 @@ from .serializers import UserSerializer
 
 from .validator_utils import validate_username, validate_email
 
-
 User = get_user_model()
+
 
 class RegisterUserView(APIView):
     permission_classes = []
@@ -27,11 +27,13 @@ class RegisterUserView(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class IsUsernameValidView(APIView):
-    """ Checks if a username is valid and not already taken. 
+    """Checks if a username is valid and not already taken.
     Requirements: - must be at least 6 characters long with no spaces
     """
+
     permission_classes = []
 
     def get(self, request):
@@ -41,7 +43,7 @@ class IsUsernameValidView(APIView):
                 {"error": "Username query parameter is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         is_valid, error_message = validate_username(username)
 
         if not is_valid:
@@ -49,11 +51,13 @@ class IsUsernameValidView(APIView):
                 {"valid": False, "error": error_message},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    
+
         return Response({"valid": True})
-    
+
+
 class IsEmailValidView(APIView):
-    """ Checks if an email is valid and not already taken. """
+    """Checks if an email is valid and not already taken."""
+
     permission_classes = []
 
     def get(self, request):
@@ -71,5 +75,5 @@ class IsEmailValidView(APIView):
                 {"valid": False, "error": error_message},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         return Response({"valid": True})

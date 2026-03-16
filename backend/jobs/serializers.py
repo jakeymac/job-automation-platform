@@ -9,6 +9,7 @@ class JobSerializer(serializers.ModelSerializer):
 
     def validate_schedule(self, value):
         from .utils import validate_cron_schedule
+
         if not validate_cron_schedule(value):
             raise serializers.ValidationError("Invalid cron schedule format")
         return value
