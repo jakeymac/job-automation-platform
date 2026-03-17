@@ -178,7 +178,7 @@ export default function ViewJobDetails() {
                 <td>
                   <button
                     className="view-job-run-btn"
-                    onClick={() => navigate(`/runs/${run.id}`)}
+                    onClick={() => navigate(`/jobs/runs/${run.id}`)}
                   >
                     View
                   </button>

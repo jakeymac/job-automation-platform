@@ -566,3 +566,40 @@ main {
 .view-job-run-btn:active {
   background: #1d4ed8;
 }
+
+/* Job run details page */
+.job-run-page {
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.job-run-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 28px;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  text-align: left;
+}
+
+.job-run-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.job-run-logs {
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 16px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 13px;
+  max-height: 400px;
+  overflow: auto;
+  white-space: pre-wrap;
+}

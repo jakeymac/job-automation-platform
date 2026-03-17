@@ -9,5 +9,5 @@ urlpatterns = [
     path("<int:job_id>/delete/", DeleteJobView.as_view(), name="delete-job"),
     path("<int:job_id>/run/", RunJobView.as_view(), name="run-job"),
     path("<int:job_id>/runs/", JobRunsView.as_view(), name="job-runs"),
-    path("runs/<int:job_run_id>/", JobRunView.as_view(), name="job-run-detail"),
+    path("runs/<int:run_id>/", JobRunView.as_view(), name="job-run-detail"),
 ]
