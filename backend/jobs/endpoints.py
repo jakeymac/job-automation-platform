@@ -19,8 +19,18 @@ class ListJobsView(APIView):
             jobs = Job.objects.all()
         else:
             jobs = Job.objects.filter(owner=request.user)
+
+        
         serializer = JobSerializer(jobs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer_data = serializer.data
+        for job_data in serializer_data:
+            job_id = job_data["id"]
+            last_run = JobRun.objects.filter(job_id=job_id).order_by("-created_at").first()
+            if last_run:
+                job_data["last_run_status"] = last_run.status
+            else:
+                job_data["last_run_status"] = None
+        return Response(serializer_data, status=status.HTTP_200_OK)
 
 
 @extend_schema(
@@ -37,7 +47,15 @@ class JobDetailView(APIView):
             else:
                 job = Job.objects.get(id=job_id, owner=request.user)
             serializer = JobSerializer(job)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+
+            last_run = job.runs.order_by("-created_at").last()
+            serializer_data = serializer.data
+            if last_run:
+                serializer_data["last_run_status"] = last_run.status
+            else:
+                serializer_data["last_run_status"] = None
+
+            return Response(serializer_data, status=status.HTTP_200_OK)
         except Job.DoesNotExist:
             return Response(
                 {"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND

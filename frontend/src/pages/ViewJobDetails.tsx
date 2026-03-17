@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { apiFetch } from "../api/client"
 import { readableSchedule } from "../utils/cron"
+import StatusBadge from "../components/StatusBadge"
 
 
 interface Job {
@@ -208,18 +209,7 @@ export default function ViewJobDetails() {
               <tr key={run.id}>
                 <td>{run.id}</td>
                 <td>
-                  <span className={`run-status ${run.status.toLowerCase()}`}>
-                    <span className="status-icon">
-                      {run.status.toLowerCase() === "success" && "✓"}
-                      {run.status.toLowerCase() === "failed" && "✗"}
-                      {run.status.toLowerCase() === "running" && "↻"}
-                      {run.status.toLowerCase() === "pending" && "⧗"}
-                      {run.status.toLowerCase() === "cancelled" && "⏹"}
-                    </span>
-                    <span className="status-text">
-                      {run.status}
-                    </span>
-                  </span>
+                  <StatusBadge status={run.status}/>
                 </td>
                 <td>{run.started_at ? new Date(run.started_at).toLocaleString() : "N/A"}</td>
                 <td>{run.finished_at ? new Date(run.finished_at).toLocaleString() : "N/A"}</td>
