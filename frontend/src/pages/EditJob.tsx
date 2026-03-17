@@ -9,6 +9,8 @@ interface Job {
   description: string
   schedule: string
   is_active: boolean
+  command: string
+  image: string
 }
 
 export default function EditJobPage() {
@@ -186,9 +188,10 @@ export default function EditJobPage() {
         <div className="form-field">
           <label>Command</label>
           <textarea
-          value={command}
-          onChange={(e) => setCommand(e.target.value)}
-          placeholder="e.g. python script.py"
+            className="command-input"
+            value={command}
+            onChange={(e) => setCommand(e.target.value)}
+            placeholder="e.g. python script.py"
           />
         </div>
 

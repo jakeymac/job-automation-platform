@@ -10,6 +10,8 @@ interface Job {
   description: string
   schedule: string
   is_active: boolean
+  command: string
+  image: string
 }
 
 interface JobRun {
@@ -29,6 +31,7 @@ interface JobRun {
 export default function ViewJobDetails() {
   const { id } = useParams()
   const [job, setJob] = useState<Job | null>(null)
+  const [ files, setFiles] = useState<any[]>([])
   const [jobRuns, setJobRuns] = useState<JobRun[]>([])
   const [loadingJobDetails, setLoadingJobDetails] = useState(true)
   const [loadingJobRuns, setLoadingJobRuns] = useState(true)
@@ -68,6 +71,21 @@ export default function ViewJobDetails() {
         setLoadingJobDetails(false)
       }
     }
+
+
+    async function loadFiles() {
+      try {
+        const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/files/`)
+        if (!response.ok) {
+          throw new Error("Failed to load files")
+        }
+        const data = await response.json()
+        setFiles(data)
+      } catch {
+        console.error("Failed to load files")
+      }
+    }
+
     async function loadJobRuns() {
       try {
         const jobRunsResponse = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/runs/`,)
@@ -85,6 +103,7 @@ export default function ViewJobDetails() {
     }
 
     loadJob()
+    loadFiles()
     loadJobRuns()
   }, [id])
 
@@ -129,9 +148,39 @@ export default function ViewJobDetails() {
       </div>
 
       <div className="job-detail-row">
+        <strong>Command:</strong>
+        <div className="command-box">{job.command}</div>
+      </div>
+
+      <div className="job-detail-row">
+        <strong>Docker Image:</strong>
+        <span>{job.image}</span>
+      </div>
+
+      <div className="job-detail-row">
         <strong>Schedule:</strong>
         <span>{readableSchedule(job.schedule)}</span>
       </div>
+
+      <div className="job-detail-row">
+        <strong>Files:</strong>
+        <div className="file-list">
+          {files.length === 0 && <span>No files uploaded</span>}
+          {files.map((file, index) => {
+            const name = file.filename
+              ? file.filename.split("/").pop()
+              : file.file?.split("/").pop() || "(no name)"
+
+            return (
+              <div className="file-item" key={`${file.id ?? 'temp'}-${index}`}>
+                <span className="file-icon">📄</span>
+                <span className="file-name">{name}</span>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
 
     </div>
     <div className="job-runs-card">

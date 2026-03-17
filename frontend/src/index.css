@@ -701,3 +701,11 @@ main {
   color: #111827;
   font-weight: 500;
 }
+
+/* Command box styling */
+.command-box {
+  font-family: monospace;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 16px;
+}
