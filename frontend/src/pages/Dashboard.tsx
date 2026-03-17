@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { apiFetch } from "../api/client"
-import { readableSchedule } from "../utils/cron"
 import StatusBadge from "../components/StatusBadge"
 
 interface Job {
@@ -62,7 +61,7 @@ export default function JobsPage() {
           {jobs.map((job) => (
             <tr key={job.id}>
               <td>{job.name}</td>
-              <td>{readableSchedule(job.schedule)}</td>
+              <td>{job.schedule}</td>
               <td>
                 {job.last_run_status ? (
                   <StatusBadge status={job.last_run_status} />
