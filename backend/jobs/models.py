@@ -9,7 +9,7 @@ class Job(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
 
-    schedule = models.CharField(max_length=255)
+    schedule = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -29,6 +29,7 @@ class JobRun(models.Model):
         RUNNING = "RUNNING", "Running"
         SUCCESS = "SUCCESS", "Success"
         FAILED = "FAILED", "Failed"
+        CANCELLED = "CANCELLED", "Cancelled"
 
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="runs")
     status = models.CharField(
@@ -37,7 +38,7 @@ class JobRun(models.Model):
     exit_code = models.IntegerField(blank=True, null=True)
     log_file = models.FileField(upload_to="job_logs/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    started_at = models.DateTimeField()
+    started_at = models.DateTimeField(blank=True, null=True)
     finished_at = models.DateTimeField(blank=True, null=True)
     duration_seconds = models.FloatField(blank=True, null=True)
     triggered_by = models.ForeignKey(

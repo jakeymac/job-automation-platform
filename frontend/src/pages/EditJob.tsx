@@ -57,7 +57,7 @@ export default function EditJobPage() {
     setSaving(true)
 
     try {
-      const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/edit/${id}/`, {
+      const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/edit/`, {
         method: "PATCH",
         body: JSON.stringify({
           name,

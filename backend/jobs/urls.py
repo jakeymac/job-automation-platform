@@ -1,10 +1,13 @@
 from django.urls import path
 
-from .endpoints import DeleteJobView, EditJobView, JobDetailView, ListJobsView
+from .endpoints import DeleteJobView, EditJobView, JobDetailView, ListJobsView, RunJobView, JobRunsView, JobRunView
 
 urlpatterns = [
     path("", ListJobsView.as_view(), name="list-jobs"),
     path("<int:job_id>/", JobDetailView.as_view(), name="job-detail"),
-    path("edit/<int:job_id>/", EditJobView.as_view(), name="edit-job"),
-    path("delete/<int:job_id>/", DeleteJobView.as_view(), name="delete-job"),
+    path("<int:job_id>/edit/", EditJobView.as_view(), name="edit-job"),
+    path("<int:job_id>/delete/", DeleteJobView.as_view(), name="delete-job"),
+    path("<int:job_id>/run/", RunJobView.as_view(), name="run-job"),
+    path("<int:job_id>/runs/", JobRunsView.as_view(), name="job-runs"),
+    path("runs/<int:job_run_id>/", JobRunView.as_view(), name="job-run-detail"),
 ]
