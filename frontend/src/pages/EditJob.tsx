@@ -88,6 +88,7 @@ export default function EditJobPage() {
       }
 
       const newFile = await response.json()
+      console.log("Uploaded file:", newFile)
 
       setUploadedFiles((prev) => [...prev, newFile])
     } catch (err) {

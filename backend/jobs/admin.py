@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Job, JobRun
+from .models import Job, JobRun, JobFile
 
 
 @admin.register(Job)
@@ -29,3 +29,9 @@ class JobRunAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "started_at", "finished_at")
     search_fields = ("job__name",)
+
+@admin.register(JobFile)
+class JobFileAdmin(admin.ModelAdmin):
+    list_display = ("job", "file", "uploaded_at")
+    list_filter = ("uploaded_at",)
+    search_fields = ("job__name", "file")

@@ -134,7 +134,7 @@ class UploadJobFileView(APIView):
         return Response(
             {
                 "message": "File uploaded successfully",
-                "file_id": new_file.id,
+                "id": new_file.id,
                 "filename": new_file.file.name,
             },
             status=status.HTTP_200_OK,

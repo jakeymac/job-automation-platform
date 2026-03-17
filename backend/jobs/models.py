@@ -30,6 +30,12 @@ class JobFile(models.Model):
     file = models.FileField(upload_to="job_files/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def delete(self, *args, **kwargs):
+        # delete the actual file first
+        if self.file:
+            self.file.delete(save=False)
+        super().delete(*args, **kwargs)
+
     def __str__(self):
         return f"{self.job.name} - {self.file.name}"
 
