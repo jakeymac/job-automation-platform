@@ -24,10 +24,12 @@ class Job(models.Model):
     def __str__(self):
         return self.name
 
+def job_file_upload_path(instance, filename):
+    return f"job_files/job_{instance.job.id}/{filename}"
 
 class JobFile(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="files")
-    file = models.FileField(upload_to="job_files/")
+    file = models.FileField(upload_to=job_file_upload_path)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def delete(self, *args, **kwargs):

@@ -1,3 +1,7 @@
+import os
+
+from django.conf import settings
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -259,3 +263,32 @@ class JobRunView(APIView):
 
         serializer = JobRunSerializer(run)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@extend_schema(
+    summary="Get job run logs",
+    description="Returns the logs of a specific job run.",
+)
+class JobRunLogsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, run_id):
+        try:
+            if request.user.is_staff:
+                run = JobRun.objects.get(id=run_id)
+            else:
+                run = JobRun.objects.get(id=run_id, job__owner=request.user)
+        except JobRun.DoesNotExist:
+            return Response(
+                {"error": "Job run not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        log_path = os.path.join(settings.BASE_DIR, "logs", f"job_run_{run.id}.log")
+        if os.path.exists(log_path):
+            with open(log_path, "r") as log_file:
+                logs = log_file.read()
+            return Response({"logs": logs}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "Log file not found"}, status=status.HTTP_404_NOT_FOUND
+            )

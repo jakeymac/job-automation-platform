@@ -3,8 +3,9 @@ import shutil
 
 from celery import shared_task
 import subprocess
-from django.utils import timezone
 import tempfile
+from django.utils import timezone
+from django.conf import settings
 
 from .models import JobRun
 
@@ -17,7 +18,7 @@ def execute_job_run(job_run_id):
     run.started_at = timezone.now()
     run.save()
 
-    job_dir = tempfile.mkdtemp(prefix=f"job_{run.id}_")
+    job_dir = os.path.join(settings.MEDIA_ROOT, f"job_files/job_{run.job.id}")
 
     for job_file in run.job.files.all():
         shutil.copy(job_file.file.path, job_dir)
@@ -42,10 +43,16 @@ def execute_job_run(job_run_id):
             text=True,
         )
 
-        os.makedirs("/logs", exist_ok=True)
-        with open(f"/logs/job_run_{run.id}.log", "w") as log_file:
+
+
+        logs_dir = os.path.join(settings.BASE_DIR, "logs")
+        os.makedirs(logs_dir, exist_ok=True)
+
+        log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
+        with open(log_path, "w") as log_file:
             for line in process.stdout:
                 log_file.write(line)
+                log_file.flush()
 
         process.wait()
 
@@ -56,8 +63,8 @@ def execute_job_run(job_run_id):
         run.status = "SUCCESS" if process.returncode == 0 else "FAILED"
 
     except Exception as e:
-        os.makedirs("/logs", exist_ok=True)
-        with open(f"/logs/job_run_{run.id}.log", "a") as log_file:
+        os.makedirs(logs_dir, exist_ok=True)
+        with open(log_path, "a") as log_file:
             log_file.write(f"Error executing job: {str(e)}\n")
         run.status = "FAILED"
 

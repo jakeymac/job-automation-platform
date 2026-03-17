@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router"
 import { apiFetch } from "../api/client"
 
@@ -19,10 +19,11 @@ interface JobRun {
 export default function ViewJobRun() {
   const { id } = useParams()
   const [run, setRun] = useState<JobRun | null>(null)
+  const [logs, setLogs] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function fetchRun() {
+    async function loadRun() {
       try {
         const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/runs/${id}/`)
         if (!response.ok) {
@@ -37,8 +38,36 @@ export default function ViewJobRun() {
       }
     }
 
-    fetchRun()
+    async function loadLogs() {
+      try {
+        const logsResponse = await apiFetch(`http://127.0.0.1:8000/api/jobs/runs/${id}/logs/`)
+        if (!logsResponse.ok) {
+            throw new Error("Failed to load job run logs")
+        }
+        const logsData = await logsResponse.json()
+        console.log("Logs data:", logsData)
+        setLogs(logsData.logs || "No logs available")
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    loadRun()
+    loadLogs()
+    const interval = setInterval(() => {
+      loadLogs()
+    }, 5000)
+    return () => clearInterval(interval)
   }, [id])
+
+  const logRef = useRef<HTMLDivElement>(null)
+  
+  useEffect(() => {
+    logRef.current?.scrollTo({
+      top: logRef.current.scrollHeight,
+      behavior: "smooth",
+    })
+  }, [logs])
 
   if (loading) {
     return <div className="job-run-page">Loading run details...</div>
@@ -62,8 +91,8 @@ export default function ViewJobRun() {
         </div>
 
         <h2>Logs</h2>
-        <pre className="job-run-logs">
-          {run.log || "No logs available"}
+        <pre className="job-run-logs" ref={logRef}>
+          {logs || "No logs available"}
         </pre>
       </div>
     </div>
