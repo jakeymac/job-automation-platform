@@ -432,6 +432,74 @@ main {
   margin-top: 20px;
 }
 
+.upload-btn {
+  background-color: #2563eb; /* blue */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.upload-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.upload-btn:disabled {
+  cursor: not-allowed;
+}
+
+
+/* Uploaded file list */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+  background: white;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.file-item:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.file-delete-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.file-delete-btn:hover {
+  color: #dc2626;
+}
+
 .cancel-btn {
   padding: 8px 14px;
   border-radius: 6px;
@@ -602,4 +670,34 @@ main {
   max-height: 400px;
   overflow: auto;
   white-space: pre-wrap;
+}
+
+/* File list styling */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.file-item:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 500;
 }

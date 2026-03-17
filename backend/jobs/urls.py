@@ -27,8 +27,7 @@ urlpatterns = [
         UploadJobFileView.as_view(),
         name="upload-job-file",
     ),
-    path(
-        "<int:job_id>/files/<int:file_id>/delete/",
+    path("files/<int:file_id>/delete/",
         DeleteJobFileView.as_view(),
         name="delete-job-file",
     ),

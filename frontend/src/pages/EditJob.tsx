@@ -98,6 +98,27 @@ export default function EditJobPage() {
     }
   }
 
+    async function handleDeleteFile(fileId: number) {
+      try {
+        const response = await apiFetch(
+          `http://127.0.0.1:8000/api/jobs/files/${fileId}/delete/`,
+          {
+            method: "DELETE",
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error("Delete failed")
+        }
+
+        setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId))
+      } catch (err) {
+        console.error(err)
+        alert("Failed to delete file")
+      }
+    }
+
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -180,26 +201,58 @@ export default function EditJobPage() {
         </div>
         <div className="form-field">
           <label>Upload Files</label>
+
           <input
-          type="file"
-          onChange={(e) => {
-            const selected = e.target.files ? e.target.files[0] : null
-            setFiles(e.target.files)
-            handleFileUpload(selected)
-          }}
+            id="file-upload"
+            type="file"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const selected = e.target.files ? e.target.files[0] : null
+              setFiles(e.target.files)
+              handleFileUpload(selected)
+
+              // allow re-upload same file
+              e.target.value = ""
+            }}
           />
-          {uploading && <small>Uploading...</small>}
+
+          <button
+            type="button"
+            onClick={() => {
+              const input = document.getElementById("file-upload") as HTMLInputElement
+              input?.click()
+            }}
+            className="upload-btn"
+            disabled={uploading}
+          >
+            { uploading? "Uploading..." : "Choose File"}
+          </button>
         </div>
         <div className="form-field">
           <label>Current Files</label>
-          {uploadedFiles.length === 0 && <small>No files uploaded</small>}
-          <ul>
-            {uploadedFiles.map((f, index) => (
-              <li key={`${f.id ?? 'temp'}-${index}`}>
-                {f.filename ? f.filename.split("/").pop() : f.file?.split("/").pop() || "(no name)"}
-              </li>
-            ))}
-          </ul>
+
+          <div className="file-list">
+            {uploadedFiles.length === 0 && <small>No files uploaded</small>}
+            {uploadedFiles.map((file, index) => {
+              const name = file.filename
+                ? file.filename.split("/").pop()
+                : file.file?.split("/").pop() || "(no name)"
+
+              return (
+                <div className="file-item" key={`${file.id ?? 'temp'}-${index}`}>
+                  <span className="file-icon">📄</span>
+                  <span className="file-name">{name}</span>
+                  <button
+                    type="button"
+                    className="file-delete-btn"
+                    onClick={() => handleDeleteFile(file.id)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )
+            })}
+          </div>
         </div>
 
         <div className="form-field">
