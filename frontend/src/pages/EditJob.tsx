@@ -23,6 +23,12 @@ export default function EditJobPage() {
   const [description, setDescription] = useState("")
   const [schedule, setSchedule] = useState("")
   const [isActive, setIsActive] = useState(false)
+  const [image, setImage] = useState("python:3.11-slim")
+  const [command, setCommand] = useState("")
+  const [files, setFiles] = useState<FileList | null>(null)
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([])
+  const [uploading, setUploading] = useState(false)
+  
 
   useEffect(() => {
     async function loadJob() {
@@ -41,7 +47,15 @@ export default function EditJobPage() {
         setDescription(data.description)
         setSchedule(data.schedule)
         setIsActive(data.is_active)
+        setImage(data.image)
+        setCommand(data.command)
 
+        // load existing files
+        const filesResponse = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/files/`)
+        if (filesResponse.ok) {
+          const filesData = await filesResponse.json()
+          setUploadedFiles(filesData)
+        }
       } catch {
         console.error("Failed to load job")
       } finally {
@@ -52,19 +66,54 @@ export default function EditJobPage() {
     loadJob()
   }, [id])
 
+  async function handleFileUpload(file: File | null) {
+    if (!file) return
+
+    setUploading(true)
+
+    const formData = new FormData()
+    formData.append("file", file)
+
+    try {
+      const response = await apiFetch(
+        `http://127.0.0.1:8000/api/jobs/${id}/files/upload/`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error("Upload failed")
+      }
+
+      const newFile = await response.json()
+
+      setUploadedFiles((prev) => [...prev, newFile])
+    } catch (err) {
+      console.error(err)
+      alert("File upload failed")
+    } finally {
+      setUploading(false)
+    }
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
 
+    const formData = new FormData()
+    formData.append("name", name)
+    formData.append("description", description)
+    formData.append("schedule", schedule)
+    formData.append("is_active", String(isActive))
+    formData.append("image", image)
+    formData.append("command", command)
+
     try {
       const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/edit/`, {
         method: "PATCH",
-        body: JSON.stringify({
-          name,
-          description,
-          schedule,
-          is_active: isActive
-        })
+        body: formData
       })
 
       if (!response.ok) {
@@ -110,6 +159,47 @@ export default function EditJobPage() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           />
+        </div>
+
+        <div className="form-field">
+          <label>Command</label>
+          <textarea
+          value={command}
+          onChange={(e) => setCommand(e.target.value)}
+          placeholder="e.g. python script.py"
+          />
+        </div>
+
+        <div className="form-field">
+          <label>Docker Image</label>
+          <input
+          value={image}
+          onChange={(e) => setImage(e.target.value)}
+          placeholder="e.g. python:3.11-slim"
+          />
+        </div>
+        <div className="form-field">
+          <label>Upload Files</label>
+          <input
+          type="file"
+          onChange={(e) => {
+            const selected = e.target.files ? e.target.files[0] : null
+            setFiles(e.target.files)
+            handleFileUpload(selected)
+          }}
+          />
+          {uploading && <small>Uploading...</small>}
+        </div>
+        <div className="form-field">
+          <label>Current Files</label>
+          {uploadedFiles.length === 0 && <small>No files uploaded</small>}
+          <ul>
+            {uploadedFiles.map((f, index) => (
+              <li key={`${f.id ?? 'temp'}-${index}`}>
+                {f.filename ? f.filename.split("/").pop() : f.file?.split("/").pop() || "(no name)"}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="form-field">

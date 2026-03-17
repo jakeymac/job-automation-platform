@@ -1,6 +1,7 @@
 from croniter import croniter
 from datetime import datetime
 
+
 def validate_job_schedule(schedule):
     """
     Validates that the given schedule is a valid cron expression.

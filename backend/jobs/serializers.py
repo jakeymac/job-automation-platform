@@ -14,8 +14,11 @@ class JobSerializer(serializers.ModelSerializer):
         valid = validate_job_schedule(value)
 
         if not valid["valid"]:
-            raise serializers.ValidationError("Invalid cron schedule format: " + valid["error"])
+            raise serializers.ValidationError(
+                "Invalid cron schedule format: " + valid["error"]
+            )
         return value
+
 
 class JobRunSerializer(serializers.ModelSerializer):
     class Meta:
