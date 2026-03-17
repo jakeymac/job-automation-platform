@@ -485,7 +485,7 @@ main {
 }
 
 .job-runs-table th {
-  text-align: left;
+  text-align: center;
   background: #f3f4f6;
   padding: 12px;
   font-weight: 600;
@@ -497,6 +497,7 @@ main {
   padding: 12px;
   border-bottom: 1px solid #f1f5f9;
   font-size: 14px;
+  text-align: center;
 }
 
 .job-runs-table tr:hover {
