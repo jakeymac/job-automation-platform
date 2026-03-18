@@ -322,12 +322,6 @@ main {
 .view-job-btn:hover {
   background: #1e40af;
 }
-.delete-job-btn {
-  background: #dc2626;
-}
-.delete-job-btn:hover {
-  background: #b91c1c;
-}
 
 /* Job Details Page */
 .job-details-page {

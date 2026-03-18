@@ -115,6 +115,26 @@ class DeleteJobView(APIView):
                 job = Job.objects.get(id=job_id)
             else:
                 job = Job.objects.get(id=job_id, owner=request.user)
+            
+            # Delete associated job runs, files, and logs
+            logs_dir = os.path.join(settings.BASE_DIR, "logs")
+            runs = job.runs.all()
+            for run in runs:
+                log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
+                if os.path.exists(log_path):
+                    try:
+                        os.remove(log_path)
+                    except Exception as e:
+                        print(f"Error deleting log file {log_path}: {e}")
+            job_file_directory = os.path.join(settings.MEDIA_ROOT, "job_files", f"job_{job.id}")
+            if os.path.exists(job_file_directory):
+                try:
+                    import shutil
+                    shutil.rmtree(job_file_directory)
+                except Exception as e:
+                    print(f"Error deleting job file directory {job_file_directory}: {e}")
+            job.files.all().delete()
+            runs.delete()
             job.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Job.DoesNotExist:

@@ -137,7 +137,7 @@ export default function JobsPage() {
               <td>
                 <button onClick={() => handleRunJob(job.id)} className="run-job-btn">Run</button>
                 <button onClick={() => navigate(`/jobs/${job.id}`)} className="view-job-btn">View</button>
-                <button onClick={() => handleDeleteJob(job.id)} className="delete-job-btn">Delete</button>
+                <button onClick={() => handleDeleteJob(job.id)} className="job-delete-btn">Delete</button>
               </td>
             </tr>
           ))}

@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.db import models
 
@@ -26,7 +28,8 @@ class Job(models.Model):
 
 
 def job_file_upload_path(instance, filename):
-    return f"job_files/job_{instance.job.id}/{filename}"
+    job_file_directory = os.path.join(settings.MEDIA_ROOT, "job_files", f"job_{instance.job.id}")
+    return os.path.join(job_file_directory, filename)
 
 
 class JobFile(models.Model):
