@@ -51,6 +51,9 @@ export default function ViewJobDetails() {
       }
       const data = await response.json()
       console.log("Job run successfully:", data)
+      const updated = await apiFetch(`/jobs/${id}/runs/`)
+      const jobRunsData = await updated.json()
+      setJobRuns(jobRunsData)
     } catch (error) {
       console.error("Failed to run job:", error)
     }
@@ -125,6 +128,14 @@ export default function ViewJobDetails() {
     loadJob()
     loadFiles()
     loadJobRuns()
+
+    const interval = setInterval(() => {
+      loadJobRuns()
+    }, 2000)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [id])
 
   if (loadingJobDetails) {

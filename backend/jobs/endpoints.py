@@ -44,7 +44,6 @@ class CreateJobView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        breakpoint()
         request_data = request.POST.copy()
         request_data["owner"] = request.user.id
         serializer = JobSerializer(data=request_data)
