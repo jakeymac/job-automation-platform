@@ -56,6 +56,25 @@ export default function ViewJobDetails() {
     }
   }
 
+  async function deleteJob() {
+    if (!confirm("Are you sure you want to delete this job?")) return
+
+    try {
+      const response = await apiFetch(`/jobs/${id}/delete/`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to delete job")
+      }
+
+      navigate("/")
+    } catch (error) {
+      console.error("Failed to delete job:", error)
+      alert("Failed to delete job")
+    }
+  }
+
   useEffect(() => {
     async function loadJob() {
       try {
@@ -139,6 +158,10 @@ export default function ViewJobDetails() {
 
           <button className="job-run-btn" onClick={runJob}>
             Run
+          </button>
+
+          <button className="job-delete-btn" onClick={deleteJob}>
+            Delete
           </button>
         </div>
       </div>

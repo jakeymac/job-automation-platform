@@ -306,9 +306,27 @@ main {
   padding: 5px 10px;
   border-radius: 6px;
   border: none;
-  background: #2563eb;
   color: white;
   cursor: pointer;
+}
+
+.run-job-btn {
+  background: #16a34a;
+}
+.run-job-btn:hover {
+  background: #15803d;
+}
+.view-job-btn {
+  background: #2563eb;
+}
+.view-job-btn:hover {
+  background: #1e40af;
+}
+.delete-job-btn {
+  background: #dc2626;
+}
+.delete-job-btn:hover {
+  background: #b91c1c;
 }
 
 /* Job Details Page */
@@ -389,14 +407,28 @@ main {
   padding: 4px 10px;
   border-radius: 6px;
   border: none;
-  background: #f59e42; /* orange-400 */
+  background: #f59e42;
   color: white;
   font-size: 13px;
   cursor: pointer;
 }
 
 .job-run-btn:hover {
-  background: #d97706; /* orange-700 */
+  background: #d97706;
+}
+
+.job-delete-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #dc2626;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.job-delete-btn:hover {
+  background: #b91c1c;
 }
 
 .job-detail-row {

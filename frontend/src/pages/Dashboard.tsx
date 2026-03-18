@@ -22,12 +22,15 @@ export default function JobsPage() {
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login")
+      return
     }
+
+    let interval: number
+
     async function loadJobs() {
       try {
         const response = await apiFetch('/jobs/')
         const data = await response.json()
-        console.log("Loaded jobs:", data)
         setJobs(data)
       } catch (err) {
         console.error("Failed to load jobs", err)
@@ -36,8 +39,61 @@ export default function JobsPage() {
       }
     }
 
+    // initial load
     loadJobs()
+
+    // poll every 2 seconds
+    interval = window.setInterval(() => {
+      loadJobs()
+    }, 2000)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [isAuthenticated])
+
+  async function handleRunJob(jobId: number) {
+    try {
+      const response = await apiFetch(`/jobs/${jobId}/run/`, {
+        method: "POST",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to run job")
+      }
+
+      // Refresh jobs after triggering run
+      const updated = await apiFetch('/jobs/')
+      const data = await updated.json()
+      setJobs(data)
+    } catch (err) {
+      console.error("Failed to run job", err)
+      alert("Failed to run job")
+    }
+  }
+
+  async function handleDeleteJob(jobId: number) {
+    if (!window.confirm("Are you sure you want to delete this job?")) {
+      return
+    }
+    
+    try {
+      const response = await apiFetch(`/jobs/${jobId}/delete/`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to delete job")
+      }
+      // Refresh jobs after deletion
+      const updated = await apiFetch('/jobs/')
+      const data = await updated.json()
+      setJobs(data)
+    } catch (err) {
+      console.error("Failed to delete job", err)
+      alert("Failed to delete job")
+    }
+  }
 
   if (loading) {
     return <p>Loading jobs...</p>
@@ -79,8 +135,9 @@ export default function JobsPage() {
                 )}
               </td>
               <td>
-                <button>Run</button>
-                <button onClick={() => navigate(`/jobs/${job.id}`)}>View</button>
+                <button onClick={() => handleRunJob(job.id)} className="run-job-btn">Run</button>
+                <button onClick={() => navigate(`/jobs/${job.id}`)} className="view-job-btn">View</button>
+                <button onClick={() => handleDeleteJob(job.id)} className="delete-job-btn">Delete</button>
               </td>
             </tr>
           ))}
