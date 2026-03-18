@@ -33,7 +33,7 @@ export default function RegisterPage() {
 
     try {
       const response = await apiFetch(
-        `http://127.0.0.1:8000/api/auth/username-valid/?username=${name}`
+        `/auth/username-valid/?username=${name}`
       )
       
       const data = await response.json()
@@ -53,7 +53,7 @@ export default function RegisterPage() {
 
     try {
       const response = await apiFetch(
-        `http://127.0.0.1:8000/api/auth/email-valid/?email=${email}`
+        `/auth/email-valid/?email=${email}`
       )
       const data = await response.json()
       setEmailValid(data.valid)
@@ -71,7 +71,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const response = await apiFetch("http://127.0.0.1:8000/api/auth/register/", {
+      const response = await apiFetch("/auth/register/", {
         method: "POST",
         body: JSON.stringify({ username, email, password }),
       })

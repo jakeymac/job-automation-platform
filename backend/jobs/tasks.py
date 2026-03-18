@@ -18,10 +18,17 @@ def execute_job_run(job_run_id):
     run.started_at = timezone.now()
     run.save()
 
-    job_dir = os.path.join(settings.MEDIA_ROOT, f"job_files/job_{run.job.id}")
+    job_dir = tempfile.mkdtemp(prefix=f"job_{run.id}_")
 
     for job_file in run.job.files.all():
-        shutil.copy(job_file.file.path, job_dir)
+        src = job_file.file.path
+        destination = os.path.join(job_dir, os.path.basename(src))
+        if os.path.abspath(src) != os.path.abspath(destination):
+            shutil.copy(src, destination)
+
+    logs_dir = os.path.join(settings.BASE_DIR, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+    log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
 
     try:
         process = subprocess.Popen(
@@ -45,10 +52,6 @@ def execute_job_run(job_run_id):
 
 
 
-        logs_dir = os.path.join(settings.BASE_DIR, "logs")
-        os.makedirs(logs_dir, exist_ok=True)
-
-        log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
         with open(log_path, "w") as log_file:
             for line in process.stdout:
                 log_file.write(line)
@@ -63,7 +66,6 @@ def execute_job_run(job_run_id):
         run.status = "SUCCESS" if process.returncode == 0 else "FAILED"
 
     except Exception as e:
-        os.makedirs(logs_dir, exist_ok=True)
         with open(log_path, "a") as log_file:
             log_file.write(f"Error executing job: {str(e)}\n")
         run.status = "FAILED"

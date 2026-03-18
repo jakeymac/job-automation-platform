@@ -17,7 +17,7 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const response = await apiFetch("http://127.0.0.1:8000/api/auth/login/", {
+      const response = await apiFetch("/auth/login/", {
         method: "POST",
         body: JSON.stringify({ username, password }),
       })

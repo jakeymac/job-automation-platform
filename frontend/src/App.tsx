@@ -18,6 +18,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/jobs/:id" element={<ViewJobDetails />} />
         <Route path="/jobs/:id/edit" element={<EditJob />} />
+        <Route path="/jobs/new" element={<EditJob />} />
         <Route path="/jobs/runs/:id" element={<ViewJobRun />} />
       </Routes>
     </Layout>

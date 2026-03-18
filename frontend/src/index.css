@@ -216,7 +216,6 @@ main {
 }
 
 /* Loading spinner for login and register buttons */
-
 .spinner {
   width: 16px;
   height: 16px;
@@ -237,6 +236,37 @@ main {
 .dashboard {
   padding: 40px;
   text-align: left;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.plus-btn {
+  background: #2563eb;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  transition: background 0.2s ease, transform 0.05s ease;
+}
+
+.plus-btn:hover {
+  background: #1d4ed8;
+}
+
+.plus-btn:active {
+  transform: scale(0.96);
 }
 
 .jobs-table {
@@ -282,7 +312,6 @@ main {
 }
 
 /* Job Details Page */
-
 .job-details-page {
   padding: 40px;
   display: flex;

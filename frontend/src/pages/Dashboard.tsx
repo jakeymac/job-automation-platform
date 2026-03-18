@@ -25,7 +25,7 @@ export default function JobsPage() {
     }
     async function loadJobs() {
       try {
-        const response = await apiFetch("http://127.0.0.1:8000/api/jobs/")
+        const response = await apiFetch('/jobs/')
         const data = await response.json()
         console.log("Loaded jobs:", data)
         setJobs(data)
@@ -45,7 +45,16 @@ export default function JobsPage() {
 
   return (
     <div className="dashboard">
-      <h1>Jobs</h1>
+      <div className="dashboard-header">
+        <h1>Jobs</h1>
+        <button
+          onClick={() => navigate("/jobs/new")}
+          aria-label="Create new job"
+          className="plus-btn"
+        >
+          +
+        </button>
+      </div>
 
       <table className="jobs-table">
         <thead>

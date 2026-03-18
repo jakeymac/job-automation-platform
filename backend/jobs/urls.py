@@ -3,6 +3,7 @@ from django.urls import path
 from .endpoints import (
     DeleteJobView,
     EditJobView,
+    CreateJobView,
     JobDetailView,
     JobFilesView,
     UploadJobFileView,
@@ -16,6 +17,7 @@ from .endpoints import (
 
 urlpatterns = [
     path("", ListJobsView.as_view(), name="list-jobs"),
+    path("new/", CreateJobView.as_view(), name="create-job"),
     path("<int:job_id>/", JobDetailView.as_view(), name="job-detail"),
     path("<int:job_id>/edit/", EditJobView.as_view(), name="edit-job"),
     path("<int:job_id>/delete/", DeleteJobView.as_view(), name="delete-job"),

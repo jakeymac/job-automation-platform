@@ -36,6 +36,21 @@ class ListJobsView(APIView):
                 job_data["last_run_status"] = None
         return Response(serializer_data, status=status.HTTP_200_OK)
 
+@extend_schema(summary="Create a new job", description="Creates a new job.")
+class CreateJobView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+
+    def post(self, request):
+        breakpoint()
+        request_data = request.POST.copy()
+        request_data["owner"] = request.user.id
+        serializer = JobSerializer(data=request_data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @extend_schema(
     summary="Get job details",

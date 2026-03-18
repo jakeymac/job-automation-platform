@@ -25,7 +25,7 @@ export default function ViewJobRun() {
   useEffect(() => {
     async function loadRun() {
       try {
-        const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/runs/${id}/`)
+        const response = await apiFetch(`/jobs/runs/${id}/`)
         if (!response.ok) {
             throw new Error("Failed to load job run details")
         }
@@ -40,7 +40,7 @@ export default function ViewJobRun() {
 
     async function loadLogs() {
       try {
-        const logsResponse = await apiFetch(`http://127.0.0.1:8000/api/jobs/runs/${id}/logs/`)
+        const logsResponse = await apiFetch(`/jobs/runs/${id}/logs/`)
         if (!logsResponse.ok) {
             throw new Error("Failed to load job run logs")
         }
@@ -60,7 +60,7 @@ export default function ViewJobRun() {
     return () => clearInterval(interval)
   }, [id])
 
-  const logRef = useRef<HTMLDivElement>(null)
+  const logRef = useRef<HTMLPreElement>(null)
   
   useEffect(() => {
     logRef.current?.scrollTo({

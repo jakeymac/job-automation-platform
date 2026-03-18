@@ -1,3 +1,4 @@
+
 export function getAuthToken() {
   return localStorage.getItem("access_token")
 }
@@ -16,7 +17,8 @@ export async function apiFetch(url: string, options: any = {}) {
     headers["Content-Type"] = "application/json"
   }
 
-  return fetch(url, {
+  const API = import.meta.env.VITE_API_URL
+  return fetch(`${API}${url}`, {
     ...options,
     headers,
   })

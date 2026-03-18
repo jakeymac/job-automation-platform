@@ -41,7 +41,7 @@ export default function ViewJobDetails() {
 
   async function runJob() {
     try {
-      const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/run/`,
+      const response = await apiFetch(`/jobs/${id}/run/`,
         {
           method: "POST"
         }
@@ -59,7 +59,7 @@ export default function ViewJobDetails() {
   useEffect(() => {
     async function loadJob() {
       try {
-        const jobDetailsResponse = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/`,)
+        const jobDetailsResponse = await apiFetch(`/jobs/${id}/`)
         if (!jobDetailsResponse.ok) {
           throw new Error("Failed to load job")
         }
@@ -76,7 +76,7 @@ export default function ViewJobDetails() {
 
     async function loadFiles() {
       try {
-        const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/files/`)
+        const response = await apiFetch(`/jobs/${id}/files/`)
         if (!response.ok) {
           throw new Error("Failed to load files")
         }
@@ -89,7 +89,7 @@ export default function ViewJobDetails() {
 
     async function loadJobRuns() {
       try {
-        const jobRunsResponse = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/runs/`,)
+        const jobRunsResponse = await apiFetch(`/jobs/${id}/runs/`)
         if (!jobRunsResponse.ok) {
           throw new Error("Failed to load job runs")
         }
@@ -109,7 +109,7 @@ export default function ViewJobDetails() {
   }, [id])
 
   if (loadingJobDetails) {
-    return <div className="job-details-page">LoadingJobDetails job...</div>
+    return <div className="job-details-page">Loading job details...</div>
   }
 
   if (!job) {

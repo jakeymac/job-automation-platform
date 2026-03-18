@@ -15,6 +15,7 @@ interface Job {
 
 export default function EditJobPage() {
   const { id } = useParams()
+  const isCreate = !id
   const navigate = useNavigate()
 
   const [job, setJob] = useState<Job | null>(null)
@@ -27,15 +28,20 @@ export default function EditJobPage() {
   const [isActive, setIsActive] = useState(false)
   const [image, setImage] = useState("python:3.11-slim")
   const [command, setCommand] = useState("")
-  const [files, setFiles] = useState<FileList | null>(null)
+  const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([])
   const [uploading, setUploading] = useState(false)
   
 
   useEffect(() => {
+    if (isCreate) {
+      setLoading(false)
+      return
+    }
+
     async function loadJob() {
       try {
-        const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/`)
+        const response = await apiFetch(`/jobs/${id}/`)
         if (!response.ok) {
           throw new Error("Failed to load job")
         } 
@@ -53,7 +59,7 @@ export default function EditJobPage() {
         setCommand(data.command)
 
         // load existing files
-        const filesResponse = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/files/`)
+        const filesResponse = await apiFetch(`/jobs/${id}/files/`)
         if (filesResponse.ok) {
           const filesData = await filesResponse.json()
           setUploadedFiles(filesData)
@@ -66,9 +72,9 @@ export default function EditJobPage() {
     }
 
     loadJob()
-  }, [id])
+  }, [id, isCreate])
 
-  async function handleFileUpload(file: File | null) {
+  async function handleFileUpload(file: File | null, jobId: number = Number(id)) {
     if (!file) return
 
     setUploading(true)
@@ -78,7 +84,7 @@ export default function EditJobPage() {
 
     try {
       const response = await apiFetch(
-        `http://127.0.0.1:8000/api/jobs/${id}/files/upload/`,
+        `/jobs/${jobId}/files/upload/`,
         {
           method: "POST",
           body: formData,
@@ -104,7 +110,7 @@ export default function EditJobPage() {
     async function handleDeleteFile(fileId: number) {
       try {
         const response = await apiFetch(
-          `http://127.0.0.1:8000/api/jobs/files/${fileId}/delete/`,
+          `/jobs/files/${fileId}/delete/`,
           {
             method: "DELETE",
           }
@@ -120,11 +126,22 @@ export default function EditJobPage() {
         alert("Failed to delete file")
       }
     }
+    
 
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
+
+    let endpoint;
+    let method;
+    if (isCreate) {
+      endpoint = `/jobs/new/`
+      method = "POST"
+    } else {
+      endpoint = `/jobs/${id}/edit/`
+      method = "PATCH"
+    }
 
     const formData = new FormData()
     formData.append("name", name)
@@ -135,17 +152,33 @@ export default function EditJobPage() {
     formData.append("command", command)
 
     try {
-      const response = await apiFetch(`http://127.0.0.1:8000/api/jobs/${id}/edit/`, {
-        method: "PATCH",
+      const response = await apiFetch(endpoint, {
+        method: method,
         body: formData
       })
-
+      
       if (!response.ok) {
         throw new Error("Failed to save job")
       }
+      
+      if (isCreate) {
+        const newJob = await response.json()
 
-      navigate(`/jobs/${id}`)
-
+        // upload pending files
+        if (pendingFiles.length > 0) {
+          pendingFiles.forEach((file) => {
+            try {
+              handleFileUpload(file, newJob.id);
+              
+            } catch (err) {
+              console.error("File upload failed after create", err)
+            }
+          })
+          navigate(`/jobs/${newJob.id}`)
+        } else {
+          navigate(`/jobs/${id}`)
+        }
+      }
     } catch {
       alert("Failed to save job")
     } finally {
@@ -157,7 +190,7 @@ export default function EditJobPage() {
     return <div className="job-details-page">Loading job...</div>
   }
 
-  if (!job) {
+  if (!isCreate && !job) {
     return <div className="job-details-page">Job not found</div>
   }
 
@@ -166,7 +199,7 @@ export default function EditJobPage() {
       <form className="job-edit-card" onSubmit={handleSave}>
 
         <div className="job-header">
-          <h1 className="job-title">Edit Job</h1>
+          <h1 className="job-title">{isCreate ? "New Job" : "Edit Job"}</h1>
         </div>
 
         <div className="form-field">
@@ -211,9 +244,8 @@ export default function EditJobPage() {
             type="file"
             style={{ display: "none" }}
             onChange={(e) => {
-              const selected = e.target.files ? e.target.files[0] : null
-              setFiles(e.target.files)
-              handleFileUpload(selected)
+              const files = e.target.files ? Array.from(e.target.files) : []
+              setPendingFiles((prev) => [...prev, ...files])
 
               // allow re-upload same file
               e.target.value = ""
@@ -229,14 +261,33 @@ export default function EditJobPage() {
             className="upload-btn"
             disabled={uploading}
           >
-            { uploading? "Uploading..." : "Choose File"}
+            { uploading ? "Uploading..." : "Add Files" }
           </button>
         </div>
         <div className="form-field">
           <label>Current Files</label>
 
           <div className="file-list">
-            {uploadedFiles.length === 0 && <small>No files uploaded</small>}
+            {uploadedFiles.length === 0 && pendingFiles.length === 0 && <small>No files added</small>}
+
+            {/* Pending files (not uploaded yet) */}
+            {pendingFiles.map((file, index) => (
+              <div className="file-item" key={`pending-${index}`}>
+                <span className="file-icon">📄</span>
+                <span className="file-name">{file.name}</span>
+                <button
+                  type="button"
+                  className="file-delete-btn"
+                  onClick={() =>
+                    setPendingFiles((prev) => prev.filter((_, i) => i !== index))
+                  }
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+
+            {/* Uploaded files */}
             {uploadedFiles.map((file, index) => {
               const name = file.filename
                 ? file.filename.split("/").pop()
@@ -283,7 +334,7 @@ export default function EditJobPage() {
           <button
           type="button"
           className="cancel-btn"
-          onClick={() => navigate(`/jobs/${id}`)}
+          onClick={() => navigate(isCreate ? "/" : `/jobs/${id}`)}
           >
           Cancel
           </button>
