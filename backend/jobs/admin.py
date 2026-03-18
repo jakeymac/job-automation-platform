@@ -30,6 +30,7 @@ class JobRunAdmin(admin.ModelAdmin):
     list_filter = ("status", "started_at", "finished_at")
     search_fields = ("job__name",)
 
+
 @admin.register(JobFile)
 class JobFileAdmin(admin.ModelAdmin):
     list_display = ("job", "file", "uploaded_at")

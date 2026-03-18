@@ -50,8 +50,6 @@ def execute_job_run(job_run_id):
             text=True,
         )
 
-
-
         with open(log_path, "w") as log_file:
             for line in process.stdout:
                 log_file.write(line)

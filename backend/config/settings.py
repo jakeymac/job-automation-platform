@@ -85,13 +85,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL)
-    }
+    DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 else:
     DATABASES = {
         "default": {
@@ -175,9 +172,6 @@ if DEBUG:
 
 
 # Celery settings
-CELERY_BROKER_URL = os.getenv(
-    "REDIS_URL",
-    "redis://127.0.0.1:6379/0"
-)
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"

@@ -24,8 +24,10 @@ class Job(models.Model):
     def __str__(self):
         return self.name
 
+
 def job_file_upload_path(instance, filename):
     return f"job_files/job_{instance.job.id}/{filename}"
+
 
 class JobFile(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="files")
