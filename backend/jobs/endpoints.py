@@ -88,7 +88,6 @@ class CreateJobView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 if serializer.data["schedule"]:
-                    print(serializer.data["schedule"])
                     setup_periodic_task(
                         serializer.data["schedule"], serializer.instance
                     )
