@@ -19,12 +19,12 @@ logger = logging.getLogger(__name__)
 
 
 def parse_cron_schedule(cron_string):
-    minute, hour, day_of_month, month, day_of_week = cron_string.split()
+    minute, hour, day_of_month, month_of_year, day_of_week = cron_string.split()
     return {
         "minute": minute,
         "hour": hour,
         "day_of_month": day_of_month,
-        "month": month,
+        "month_of_year": month_of_year,
         "day_of_week": day_of_week,
     }
 
@@ -36,7 +36,7 @@ def setup_periodic_task(schedule, job):
         minute=cron_parts["minute"],
         hour=cron_parts["hour"],
         day_of_month=cron_parts["day_of_month"],
-        month=cron_parts["month"],
+        month_of_year=cron_parts["month_of_year"],
         day_of_week=cron_parts["day_of_week"],
     )
 
@@ -88,6 +88,7 @@ class CreateJobView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 if serializer.data["schedule"]:
+                    print(serializer.data["schedule"])
                     setup_periodic_task(
                         serializer.data["schedule"], serializer.instance
                     )
@@ -244,9 +245,9 @@ class UploadJobFileView(APIView):
             return Response(
                 {"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND
             )
-
         file = request.FILES.get("file")
         if file:
+            file.name = os.path.basename(file.name)
             new_file = JobFile.objects.create(job=job, file=file)
 
         return Response(

@@ -28,16 +28,11 @@ class Job(models.Model):
 
 
 def job_file_upload_path(instance, filename):
-    job_file_directory = os.path.join(
-        settings.MEDIA_ROOT, "job_files", f"job_{instance.job.id}"
-    )
-    return os.path.join(job_file_directory, filename)
+    return os.path.join("job_files", f"job_{instance.job.id}", filename)
 
 
 def job_run_log_upload_path(instance):
-    logs_directory = os.path.join(settings.MEDIA_ROOT, "job_logs")
-    return os.path.join(logs_directory, f"job_run_{instance.id}.log")
-
+    return os.path.join("job_logs", f"job_run_{instance.id}.log")
 
 class JobFile(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="files")

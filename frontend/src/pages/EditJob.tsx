@@ -107,28 +107,26 @@ export default function EditJobPage() {
     }
   }
 
-    async function handleDeleteFile(fileId: number) {
-      try {
-        const response = await apiFetch(
-          `/jobs/files/${fileId}/delete/`,
-          {
-            method: "DELETE",
-          }
-        )
-
-        if (!response.ok) {
-          throw new Error("Delete failed")
+  async function handleDeleteFile(fileId: number) {
+    try {
+      const response = await apiFetch(
+        `/jobs/files/${fileId}/delete/`,
+        {
+          method: "DELETE",
         }
+      )
 
-        setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId))
-      } catch (err) {
-        console.error(err)
-        alert("Failed to delete file")
+      if (!response.ok) {
+        throw new Error("Delete failed")
       }
+
+      setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId))
+    } catch (err) {
+      console.error(err)
+      alert("Failed to delete file")
     }
+  }
     
-
-
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -174,10 +172,11 @@ export default function EditJobPage() {
               console.error("File upload failed after create", err)
             }
           })
-          navigate(`/jobs/${newJob.id}`)
-        } else {
-          navigate(`/jobs/${id}`)
+          
         }
+        navigate(`/jobs/${newJob.id}`)
+      } else {
+        navigate(`/jobs/${id}`)
       }
     } catch {
       alert("Failed to save job")
@@ -245,10 +244,13 @@ export default function EditJobPage() {
             style={{ display: "none" }}
             onChange={(e) => {
               const files = e.target.files ? Array.from(e.target.files) : []
-              setPendingFiles((prev) => [...prev, ...files])
-
-              // allow re-upload same file
               e.target.value = ""
+              if (isCreate) {
+                setPendingFiles((prev) => [...prev, ...files])
+                // allow re-upload same file
+              } else {
+                files.forEach((file) => handleFileUpload(file))
+              }
             }}
           />
 
