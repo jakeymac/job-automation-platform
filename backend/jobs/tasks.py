@@ -36,8 +36,9 @@ def execute_job_run(job_run_id):
     run.started_at = timezone.now()
     run.save()
 
-    job_dir = tempfile.mkdtemp(prefix=f"job_{run.id}_")
-
+    job_dir = os.path.join(settings.MEDIA_ROOT, "tmp_jobs", f"job_{run.id}")
+    os.makedirs(job_dir, exist_ok=True)
+    
     for job_file in run.job.files.all():
         src = job_file.file.path
         destination = os.path.join(job_dir, os.path.basename(src))
@@ -46,7 +47,6 @@ def execute_job_run(job_run_id):
     logger.info(f"Job dir contents: {os.listdir(job_dir)}")
 
     try:
-
         logs_dir = os.path.join(settings.MEDIA_ROOT, "job_logs")
         os.makedirs(logs_dir, exist_ok=True)
         log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
