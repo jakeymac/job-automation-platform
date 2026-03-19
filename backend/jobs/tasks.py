@@ -38,7 +38,7 @@ def execute_job_run(job_run_id):
 
     job_dir = os.path.join(settings.MEDIA_ROOT, "tmp_jobs", f"job_{run.id}")
     os.makedirs(job_dir, exist_ok=True)
-    
+
     for job_file in run.job.files.all():
         src = job_file.file.path
         destination = os.path.join(job_dir, os.path.basename(src))
