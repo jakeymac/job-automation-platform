@@ -81,15 +81,23 @@ class CreateJobView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
-        request_data = request.POST.copy()
-        request_data["owner"] = request.user.id
-        serializer = JobSerializer(data=request_data)
-        if serializer.is_valid():
-            serializer.save()
-            if serializer.data["schedule"]:
-                setup_periodic_task(serializer.data["schedule"], serializer.instance)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            request_data = request.POST.copy()
+            request_data["owner"] = request.user.id
+            serializer = JobSerializer(data=request_data)
+            if serializer.is_valid():
+                serializer.save()
+                if serializer.data["schedule"]:
+                    setup_periodic_task(serializer.data["schedule"], serializer.instance)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            logger.error(f"Error creating job: {e}")
+            return Response(
+                {"error": "An error occurred while creating the job."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 @extend_schema(

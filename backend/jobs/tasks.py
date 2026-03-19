@@ -43,10 +43,20 @@ def execute_job_run(job_run_id):
         destination = os.path.join(job_dir, os.path.basename(src))
         if os.path.abspath(src) != os.path.abspath(destination):
             shutil.copy(src, destination)
+    
+    try:
 
-    logs_dir = os.path.join(settings.MEDIA_ROOT, "job_logs")
-    os.makedirs(logs_dir, exist_ok=True)
-    log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
+        logs_dir = os.path.join(settings.MEDIA_ROOT, "job_logs")
+        os.makedirs(logs_dir, exist_ok=True)
+        log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
+    except Exception as e:
+        logger.error(f"Error setting up log file for JobRun {run.id}: {e}")
+        run.status = "FAILED"
+        run.finished_at = timezone.now()
+        run.duration_seconds = (run.finished_at - run.started_at).total_seconds()
+        run.save()
+        shutil.rmtree(job_dir, ignore_errors=True)
+        return
 
     try:
         process = subprocess.Popen(
