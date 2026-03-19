@@ -43,7 +43,7 @@ def execute_job_run(job_run_id):
         destination = os.path.join(job_dir, os.path.basename(src))
         if os.path.abspath(src) != os.path.abspath(destination):
             shutil.copy(src, destination)
-    
+
     try:
 
         logs_dir = os.path.join(settings.MEDIA_ROOT, "job_logs")

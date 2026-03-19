@@ -88,10 +88,12 @@ class CreateJobView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 if serializer.data["schedule"]:
-                    setup_periodic_task(serializer.data["schedule"], serializer.instance)
+                    setup_periodic_task(
+                        serializer.data["schedule"], serializer.instance
+                    )
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         except Exception as e:
             logger.error(f"Error creating job: {e}")
             return Response(
