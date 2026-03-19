@@ -29,11 +29,11 @@ jobs:
 
       - name: Build backend image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/job-platform-backend:latest ./backend
+          docker build -t ghcr.io/${{ github.repository_owner }}/job-automation-platform-backend:latest ./backend
 
       - name: Push backend image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/job-platform-backend:latest
+          docker push ghcr.io/${{ github.repository_owner }}/job-automation-platform-backend:latest
 
   build-frontend:
     if: >
@@ -59,8 +59,8 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/job-platform-frontend:latest ./frontend
+          docker build -t ghcr.io/${{ github.repository_owner }}/job-automation-platform-frontend:latest ./frontend
 
       - name: Push frontend image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/job-platform-frontend:latest
+          docker push ghcr.io/${{ github.repository_owner }}/job-automation-platform-frontend:latest
