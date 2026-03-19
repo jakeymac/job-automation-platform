@@ -27,6 +27,18 @@ jobs:
             echo "Pulling latest version of the repo..."
             git pull https://jakeymac:${{ secrets.GH_TOKEN }}@github.com/jakeymac/job-automation-platform.git
 
+            cat <<EOF > .env
+              DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+              DEBUG=False
+
+              POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+              POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+              POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+
+              DATABASE_URL=postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}
+              REDIS_URL=redis://redis:6379/0
+              EOF
+
             echo "Pulling latest images..."
             echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u jakeymac --password-stdin
 

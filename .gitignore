@@ -1,5 +1,7 @@
 backend/db.sqlite3
 *.pyc
 .env*
+!frontend/.env.production
+!frontend/.env.development
 job_files
 logs
