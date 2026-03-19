@@ -13,13 +13,16 @@ interface Job {
 }
 
 export default function JobsPage() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, authLoading } = useAuth()
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
 
   const navigate = useNavigate()
 
   useEffect(() => {
+    if (authLoading) {
+      return
+    }
     if (!isAuthenticated) {
       navigate("/login")
       return
@@ -50,7 +53,7 @@ export default function JobsPage() {
     return () => {
       clearInterval(interval)
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, authLoading, navigate])
 
   async function handleRunJob(jobId: number) {
     try {

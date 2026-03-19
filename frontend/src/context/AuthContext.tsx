@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from "
 
 interface AuthContextType {
   isAuthenticated: boolean
+  authLoading: boolean
   login: (token: string) => void
   logout: () => void
 }
@@ -10,10 +11,12 @@ const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [authLoading, setAuthLoading] = useState(true)
 
   useEffect(() => {
     const token = localStorage.getItem("access_token")
     setIsAuthenticated(!!token)
+    setAuthLoading(false)
   }, [])
 
   function login(token: string) {
@@ -27,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, authLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
