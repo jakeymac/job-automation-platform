@@ -34,6 +34,7 @@ def job_file_upload_path(instance, filename):
 def job_run_log_upload_path(instance):
     return os.path.join("job_logs", f"job_run_{instance.id}.log")
 
+
 class JobFile(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="files")
     file = models.FileField(upload_to=job_file_upload_path)
