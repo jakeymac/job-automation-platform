@@ -1,5 +1,6 @@
-from croniter import croniter
 from datetime import datetime
+
+from croniter import croniter
 
 
 def validate_job_schedule(schedule):

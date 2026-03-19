@@ -1,18 +1,18 @@
 from django.urls import path
 
 from .endpoints import (
+    CreateJobView,
+    DeleteJobFileView,
     DeleteJobView,
     EditJobView,
-    CreateJobView,
     JobDetailView,
     JobFilesView,
-    UploadJobFileView,
-    DeleteJobFileView,
-    ListJobsView,
-    RunJobView,
+    JobRunLogsView,
     JobRunsView,
     JobRunView,
-    JobRunLogsView,
+    ListJobsView,
+    RunJobView,
+    UploadJobFileView,
 )
 
 urlpatterns = [

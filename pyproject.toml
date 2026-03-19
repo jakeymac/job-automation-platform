@@ -8,6 +8,7 @@ target-version = "py313"
 
 exclude = [
     "*/migrations/*",
+    "job_files",
 ]
 
 [tool.ruff.lint]

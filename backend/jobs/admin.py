@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Job, JobRun, JobFile
+from .models import Job, JobFile, JobRun
 
 
 @admin.register(Job)

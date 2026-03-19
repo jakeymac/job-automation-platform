@@ -28,8 +28,11 @@ class Job(models.Model):
 
 
 def job_file_upload_path(instance, filename):
-    job_file_directory = os.path.join(settings.MEDIA_ROOT, "job_files", f"job_{instance.job.id}")
+    job_file_directory = os.path.join(
+        settings.MEDIA_ROOT, "job_files", f"job_{instance.job.id}"
+    )
     return os.path.join(job_file_directory, filename)
+
 
 def job_run_log_upload_path(instance):
     logs_directory = os.path.join(settings.MEDIA_ROOT, "job_logs")
@@ -64,7 +67,9 @@ class JobRun(models.Model):
         max_length=50, choices=Status.choices, default=Status.PENDING
     )
     exit_code = models.IntegerField(blank=True, null=True)
-    log_file = models.FileField(upload_to=job_run_log_upload_path, blank=True, null=True)
+    log_file = models.FileField(
+        upload_to=job_run_log_upload_path, blank=True, null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(blank=True, null=True)
     finished_at = models.DateTimeField(blank=True, null=True)

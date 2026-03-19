@@ -1,19 +1,22 @@
-import os
 import json
+import logging
+import os
 
 from django.conf import settings
-
+from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
-from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
-from .models import Job, JobRun, JobFile
-from .serializers import JobSerializer, JobRunSerializer
+from .models import Job, JobFile, JobRun
+from .serializers import JobRunSerializer, JobSerializer
 from .tasks import execute_job_run
+
+logger = logging.getLogger(__name__)
+
 
 def parse_cron_schedule(cron_string):
     minute, hour, day_of_month, month, day_of_week = cron_string.split()
@@ -24,6 +27,7 @@ def parse_cron_schedule(cron_string):
         "month": month,
         "day_of_week": day_of_week,
     }
+
 
 def setup_periodic_task(schedule, job):
     cron_parts = parse_cron_schedule(schedule)
@@ -45,7 +49,7 @@ def setup_periodic_task(schedule, job):
             "enabled": job.is_active,
         },
     )
-    
+
 
 @extend_schema(summary="List all jobs", description="Returns all jobs currently.")
 class ListJobsView(APIView):
@@ -132,7 +136,9 @@ class EditJobView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 if serializer.data["schedule"]:
-                    setup_periodic_task(serializer.data["schedule"], serializer.instance)
+                    setup_periodic_task(
+                        serializer.data["schedule"], serializer.instance
+                    )
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Job.DoesNotExist:
@@ -151,7 +157,7 @@ class DeleteJobView(APIView):
                 job = Job.objects.get(id=job_id)
             else:
                 job = Job.objects.get(id=job_id, owner=request.user)
-            
+
             # Delete associated job runs, files, and logs
             logs_dir = os.path.join(settings.MEDIA_ROOT, "logs")
             runs = job.runs.all()
@@ -161,14 +167,19 @@ class DeleteJobView(APIView):
                     try:
                         os.remove(log_path)
                     except Exception as e:
-                        print(f"Error deleting log file {log_path}: {e}")
-            job_file_directory = os.path.join(settings.MEDIA_ROOT, "job_files", f"job_{job.id}")
+                        logger.error(f"Error deleting log file {log_path}: {e}")
+            job_file_directory = os.path.join(
+                settings.MEDIA_ROOT, "job_files", f"job_{job.id}"
+            )
             if os.path.exists(job_file_directory):
                 try:
                     import shutil
+
                     shutil.rmtree(job_file_directory)
                 except Exception as e:
-                    print(f"Error deleting job file directory {job_file_directory}: {e}")
+                    logger.error(
+                        f"Error deleting job file directory {job_file_directory}: {e}"
+                    )
             job.files.all().delete()
             runs.delete()
             PeriodicTask.objects.filter(name=f"job-{job.id}").delete()

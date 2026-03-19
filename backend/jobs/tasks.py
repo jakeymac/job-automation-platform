@@ -1,36 +1,36 @@
+import logging
 import os
 import shutil
-
-from celery import shared_task
 import subprocess
 import tempfile
-from django.utils import timezone
+
+from celery import shared_task
 from django.conf import settings
+from django.utils import timezone
 
 from .models import JobRun
 
+logger = logging.getLogger(__name__)
 
 @shared_task
 def run_scheduled_job(job_id):
-    from .models import JobRun, Job
+    from .models import Job, JobRun
 
     job = Job.objects.get(id=job_id)
 
-    run = JobRun.objects.create(
-        job=job,
-        status="PENDING"
-    )
+    run = JobRun.objects.create(job=job, status="PENDING")
 
     execute_job_run.delay(run.id)
+
 
 @shared_task
 def execute_job_run(job_run_id):
     try:
         run = JobRun.objects.get(id=job_run_id)
     except JobRun.DoesNotExist:
-        print(f"JobRun with id {job_run_id} does not exist")
+        logger.warning(f"JobRun with id {job_run_id} does not exist")
         return
-    
+
     run.status = "RUNNING"
     run.started_at = timezone.now()
     run.save()
