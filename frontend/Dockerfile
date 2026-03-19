@@ -16,9 +16,11 @@ RUN npm run build
 # Production stage (Nginx)
 FROM nginx:alpine
 
-# Copy built files to nginx
+# Copy built files
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# 👇 ADD THIS LINE
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port
 EXPOSE 80
 
