@@ -11,9 +11,26 @@ from .models import JobRun
 
 
 @shared_task
-def execute_job_run(job_run_id):
-    run = JobRun.objects.get(id=job_run_id)
+def run_scheduled_job(job_id):
+    from .models import JobRun, Job
 
+    job = Job.objects.get(id=job_id)
+
+    run = JobRun.objects.create(
+        job=job,
+        status="PENDING"
+    )
+
+    execute_job_run.delay(run.id)
+
+@shared_task
+def execute_job_run(job_run_id):
+    try:
+        run = JobRun.objects.get(id=job_run_id)
+    except JobRun.DoesNotExist:
+        print(f"JobRun with id {job_run_id} does not exist")
+        return
+    
     run.status = "RUNNING"
     run.started_at = timezone.now()
     run.save()
@@ -26,7 +43,7 @@ def execute_job_run(job_run_id):
         if os.path.abspath(src) != os.path.abspath(destination):
             shutil.copy(src, destination)
 
-    logs_dir = os.path.join(settings.BASE_DIR, "logs")
+    logs_dir = os.path.join(settings.MEDIA_ROOT, "logs")
     os.makedirs(logs_dir, exist_ok=True)
     log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
 

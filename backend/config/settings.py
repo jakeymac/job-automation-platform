@@ -28,7 +28,7 @@ dotenv.load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = "django-insecure-+a2!9ma+d0pyk=$wr#u6c&$5c83-02@^eb8&v7wyxh=9y$f!ew"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True")
 
 ALLOWED_HOSTS = []
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_celery_beat",
     "rest_framework",
     "drf_spectacular",
     "corsheaders",
@@ -175,3 +176,4 @@ if DEBUG:
 CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

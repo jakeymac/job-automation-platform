@@ -1,4 +1,5 @@
 import os
+import json
 
 from django.conf import settings
 
@@ -8,11 +9,43 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
 from .models import Job, JobRun, JobFile
 from .serializers import JobSerializer, JobRunSerializer
 from .tasks import execute_job_run
 
+def parse_cron_schedule(cron_string):
+    minute, hour, day_of_month, month, day_of_week = cron_string.split()
+    return {
+        "minute": minute,
+        "hour": hour,
+        "day_of_month": day_of_month,
+        "month": month,
+        "day_of_week": day_of_week,
+    }
+
+def setup_periodic_task(schedule, job):
+    cron_parts = parse_cron_schedule(schedule)
+
+    schedule, _ = CrontabSchedule.objects.get_or_create(
+        minute=cron_parts["minute"],
+        hour=cron_parts["hour"],
+        day_of_month=cron_parts["day_of_month"],
+        month_of_year=cron_parts["month_of_year"],
+        day_of_week=cron_parts["day_of_week"],
+    )
+
+    PeriodicTask.objects.update_or_create(
+        name=f"job-{job.id}",
+        defaults={
+            "crontab": schedule,
+            "task": "jobs.tasks.run_scheduled_job",
+            "args": json.dumps([job.id]),
+            "enabled": job.is_active,
+        },
+    )
+    
 
 @extend_schema(summary="List all jobs", description="Returns all jobs currently.")
 class ListJobsView(APIView):
@@ -49,6 +82,8 @@ class CreateJobView(APIView):
         serializer = JobSerializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
+            if serializer.data["schedule"]:
+                setup_periodic_task(serializer.data["schedule"], serializer.instance)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -96,6 +131,8 @@ class EditJobView(APIView):
             serializer = JobSerializer(job, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+                if serializer.data["schedule"]:
+                    setup_periodic_task(serializer.data["schedule"], serializer.instance)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Job.DoesNotExist:
@@ -116,7 +153,7 @@ class DeleteJobView(APIView):
                 job = Job.objects.get(id=job_id, owner=request.user)
             
             # Delete associated job runs, files, and logs
-            logs_dir = os.path.join(settings.BASE_DIR, "logs")
+            logs_dir = os.path.join(settings.MEDIA_ROOT, "logs")
             runs = job.runs.all()
             for run in runs:
                 log_path = os.path.join(logs_dir, f"job_run_{run.id}.log")
@@ -134,7 +171,9 @@ class DeleteJobView(APIView):
                     print(f"Error deleting job file directory {job_file_directory}: {e}")
             job.files.all().delete()
             runs.delete()
+            PeriodicTask.objects.filter(name=f"job-{job.id}").delete()
             job.delete()
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Job.DoesNotExist:
             return Response(
@@ -319,7 +358,7 @@ class JobRunLogsView(APIView):
                 {"error": "Job run not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-        log_path = os.path.join(settings.BASE_DIR, "logs", f"job_run_{run.id}.log")
+        log_path = os.path.join(settings.MEDIA_ROOT, "logs", f"job_run_{run.id}.log")
         if os.path.exists(log_path):
             with open(log_path, "r") as log_file:
                 logs = log_file.read()
