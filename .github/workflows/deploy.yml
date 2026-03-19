@@ -3,7 +3,6 @@ name: Deploy
 on:
   workflow_dispatch:
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,10 +15,21 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            cd ~
+
+            if [ ! -d "job-automation-platform" ]; then
+              echo "Cloning repo..."
+              git clone https://jakeymac:${{ secrets.GH_TOKEN }}@github.com/jakeymac/job-automation-platform.git job-automation-platform
+            fi
+
             cd ~/job-automation-platform
 
+            echo "Pulling latest version of the repo..."
+            git pull https://jakeymac:${{ secrets.GH_TOKEN }}@github.com/jakeymac/job-automation-platform.git
+
             echo "Pulling latest images..."
-            echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u jakeymac --password-stdin
+
             docker compose pull
 
             echo "Restarting containers..."
