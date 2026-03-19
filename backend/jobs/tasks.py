@@ -2,7 +2,6 @@ import logging
 import os
 import shutil
 import subprocess
-import tempfile
 
 from celery import shared_task
 from django.conf import settings
