@@ -12,6 +12,7 @@ from .models import JobRun
 
 logger = logging.getLogger(__name__)
 
+
 @shared_task
 def run_scheduled_job(job_id):
     from .models import Job, JobRun
