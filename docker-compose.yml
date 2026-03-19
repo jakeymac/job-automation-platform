@@ -21,15 +21,15 @@ services:
       - redis_data:/data
 
   backend:
-    build: ./backend
+    image: ghcr.io/jakeymac/job-automation-platform-backend:latest
     restart: always
     command: >
-      sh -c "
-        echo 'Waiting for database...' &&
+      sh -c '
+        echo "Waiting for database..." &&
         sleep 5 &&
         python manage.py migrate &&
         gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --threads 2 --timeout 120
-      "
+      '
     expose:
       - "8000"
     volumes:
@@ -40,14 +40,14 @@ services:
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/jobs"]
       interval: 30s
       timeout: 10s
       retries: 5
     
 
   worker:
-    build: ./backend
+    image: ghcr.io/jakeymac/job-automation-platform-backend:latest
     restart: always
     command: celery -A config worker -l info --concurrency=4
     volumes:
@@ -60,9 +60,14 @@ services:
       - .env
 
   beat:
-    build: ./backend
+    image: ghcr.io/jakeymac/job-automation-platform-backend:latest
     restart: always
-    command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: > 
+      sh -c '
+        echo "Waiting for backend..."
+        sleep 10
+        celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      '
     depends_on:
       - redis
       - backend
@@ -70,7 +75,7 @@ services:
       - .env
 
   frontend:
-    build: ./frontend
+    image: ghcr.io/jakeymac/job-automation-platform-frontend:latest
     restart: always
     ports:
       - "3000:80"
