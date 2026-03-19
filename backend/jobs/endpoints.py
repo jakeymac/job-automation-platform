@@ -379,7 +379,7 @@ class JobRunLogsView(APIView):
                 {"error": "Job run not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
-        log_path = os.path.join(settings.MEDIA_ROOT, "logs", f"job_run_{run.id}.log")
+        log_path = os.path.join(settings.MEDIA_ROOT, "job_logs", f"job_run_{run.id}.log")
         if os.path.exists(log_path):
             with open(log_path, "r") as log_file:
                 logs = log_file.read()
