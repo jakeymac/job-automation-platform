@@ -36,7 +36,7 @@ def setup_periodic_task(schedule, job):
         minute=cron_parts["minute"],
         hour=cron_parts["hour"],
         day_of_month=cron_parts["day_of_month"],
-        month_of_year=cron_parts["month_of_year"],
+        month=cron_parts["month"],
         day_of_week=cron_parts["day_of_week"],
     )
 
@@ -117,7 +117,7 @@ class JobDetailView(APIView):
                 job = Job.objects.get(id=job_id, owner=request.user)
             serializer = JobSerializer(job)
 
-            last_run = job.runs.order_by("-created_at").last()
+            last_run = job.runs.order_by("-created_at").first()
             serializer_data = serializer.data
             if last_run:
                 serializer_data["last_run_status"] = last_run.status
