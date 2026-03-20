@@ -35,17 +35,21 @@ def execute_job_run(job_run_id):
     run.started_at = timezone.now()
     run.save()
 
-    host_media_root = os.environ.get("HOST_MEDIA_ROOT", settings.MEDIA_ROOT)
+    container_media_root = os.environ.get("HOST_MEDIA_ROOT", settings.MEDIA_ROOT)
+    host_media_root_real = os.environ.get("HOST_MEDIA_ROOT_REAL", container_media_root)
 
-    job_dir = os.path.join(host_media_root, "tmp_jobs", f"job_{run.id}")
-    os.makedirs(job_dir, exist_ok=True)
+    job_dir_container = os.path.join(container_media_root, "tmp_jobs", f"job_{run.id}")
+    job_dir_host = os.path.join(host_media_root_real, "tmp_jobs", f"job_{run.id}")
+    os.makedirs(job_dir_container, exist_ok=True)
 
     for job_file in run.job.files.all():
         src = job_file.file.path
-        destination = os.path.join(job_dir, os.path.basename(src))
+        destination = os.path.join(job_dir_container, os.path.basename(src))
         if os.path.abspath(src) != os.path.abspath(destination):
             shutil.copy(src, destination)
-    logger.info(f"Job dir contents: {os.listdir(job_dir)}")
+    logger.info(f"Container job dir: {job_dir_container}")
+    logger.info(f"Host job dir: {job_dir_host}")
+    logger.info(f"Job dir contents: {os.listdir(job_dir_container)}")
     try:
         logs_dir = os.path.join(settings.MEDIA_ROOT, "job_logs")
         os.makedirs(logs_dir, exist_ok=True)
@@ -56,7 +60,7 @@ def execute_job_run(job_run_id):
         run.finished_at = timezone.now()
         run.duration_seconds = (run.finished_at - run.started_at).total_seconds()
         run.save()
-        shutil.rmtree(job_dir, ignore_errors=True)
+        shutil.rmtree(job_dir_container, ignore_errors=True)
         return
 
     try:
@@ -66,7 +70,7 @@ def execute_job_run(job_run_id):
                 "run",
                 "--rm",
                 "-v",
-                f"{job_dir}:/workspace",
+                f"{job_dir_host}:/workspace",
                 "-w",
                 "/workspace",
                 run.job.image,
@@ -104,4 +108,4 @@ def execute_job_run(job_run_id):
 
     run.save()
 
-    shutil.rmtree(job_dir, ignore_errors=True)
+    shutil.rmtree(job_dir_container, ignore_errors=True)

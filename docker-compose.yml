@@ -55,6 +55,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - HOST_MEDIA_ROOT=/app/media
+      - HOST_MEDIA_ROOT_REAL=${PWD}/media
     depends_on:
       - db
       - redis
