@@ -34,8 +34,9 @@ services:
       - "8000"
     volumes:
       - ./media:/app/media
+      - ./media:/host_media
     environment:
-      - HOST_MEDIA_ROOT=/app/media
+      - HOST_MEDIA_ROOT=/host_media
     depends_on:
       - db
       - redis
@@ -53,9 +54,10 @@ services:
     restart: always
     command: celery -A config worker -l info --concurrency=4
     environment:
-      - HOST_MEDIA_ROOT=/app/media
+      - HOST_MEDIA_ROOT=/host_media
     volumes:
       - ./media:/app/media
+      - ./media:/host_media
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - db
