@@ -35,7 +35,9 @@ def execute_job_run(job_run_id):
     run.started_at = timezone.now()
     run.save()
 
-    job_dir = os.path.join(settings.MEDIA_ROOT, "tmp_jobs", f"job_{run.id}")
+    host_media_root = os.environ.get("HOST_MEDIA_ROOT", settings.MEDIA_ROOT)
+
+    job_dir = os.path.join(host_media_root, "tmp_jobs", f"job_{run.id}")
     os.makedirs(job_dir, exist_ok=True)
 
     for job_file in run.job.files.all():
