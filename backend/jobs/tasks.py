@@ -46,7 +46,6 @@ def execute_job_run(job_run_id):
         if os.path.abspath(src) != os.path.abspath(destination):
             shutil.copy(src, destination)
     logger.info(f"Job dir contents: {os.listdir(job_dir)}")
-
     try:
         logs_dir = os.path.join(settings.MEDIA_ROOT, "job_logs")
         os.makedirs(logs_dir, exist_ok=True)

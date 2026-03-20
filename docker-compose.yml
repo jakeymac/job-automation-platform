@@ -34,9 +34,6 @@ services:
       - "8000"
     volumes:
       - ./media:/app/media
-      - ./media:/host_media
-    environment:
-      - HOST_MEDIA_ROOT=/host_media
     depends_on:
       - db
       - redis
@@ -53,12 +50,11 @@ services:
     image: ghcr.io/jakeymac/job-automation-platform-backend:latest
     restart: always
     command: celery -A config worker -l info --concurrency=4
-    environment:
-      - HOST_MEDIA_ROOT=/host_media
     volumes:
       - ./media:/app/media
-      - ./media:/host_media
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - HOST_MEDIA_ROOT=/app/media
     depends_on:
       - db
       - redis
