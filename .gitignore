@@ -4,5 +4,5 @@ backend/db.sqlite3
 !frontend/.env.production
 !frontend/.env.development
 job_files
-logs
+job_logs
 .DS_Store
