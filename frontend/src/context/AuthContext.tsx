@@ -19,13 +19,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthLoading(false)
   }, [])
 
-  function login(token: string) {
-    localStorage.setItem("access_token", token)
+  function login(access_token: string, refresh_token: string) {
+    localStorage.setItem("access_token", access_token)
+    localStorage.setItem("refresh_token", refresh_token)
     setIsAuthenticated(true)
   }
 
   function logout() {
     localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
     setIsAuthenticated(false)
   }
 

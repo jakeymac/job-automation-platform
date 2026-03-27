@@ -33,7 +33,16 @@ export default function JobsPage() {
     async function loadJobs() {
       try {
         const response = await apiFetch('/jobs/')
+        if (response.status === 401) {
+          navigate("/login")
+          return
+        }
         const data = await response.json()
+        if (!Array.isArray(data)) {
+          console.error("Invalid jobs response:", data)
+          setJobs([])
+          return
+        }
         setJobs(data)
       } catch (err) {
         console.error("Failed to load jobs", err)
