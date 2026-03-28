@@ -23,8 +23,8 @@ export default function ViewJobRun() {
   const [logs, setLogs] = useState("")
   const [loading, setLoading] = useState(true)
 
-  pageTitle(run ? `Job Run #${run.id} - ${run.status}` : "Loading run details...")
 
+  pageTitle(loading ? "Loading run details..." : run ? `Job Run #${run.id} - ${run.status}` : "Run not found")
 
   useEffect(() => {
     async function loadRun() {

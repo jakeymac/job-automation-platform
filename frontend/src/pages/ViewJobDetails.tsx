@@ -40,7 +40,7 @@ export default function ViewJobDetails() {
 
   const navigate = useNavigate()
 
-  pageTitle(job ? `Job Details - ${job.name}` : "Loading job details...")
+  pageTitle(loadingJobDetails ? "Loading job..." : job ? `Job Details - ${job.name}` : "Job not found")
 
   async function runJob() {
     try {
