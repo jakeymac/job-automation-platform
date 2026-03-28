@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router"
 
 import { useAuth } from "../context/AuthContext"
@@ -14,7 +14,6 @@ export default function LoginPage() {
   const navigate = useNavigate()
 
   pageTitle("Login");
-
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
