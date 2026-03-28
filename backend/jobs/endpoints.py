@@ -18,6 +18,12 @@ from .tasks import execute_job_run
 logger = logging.getLogger(__name__)
 
 
+def get_job(job_id, user):
+    if user.is_staff:
+        return Job.objects.get(id=job_id)
+    else:
+        return Job.objects.get(id=job_id, owner=user)
+
 def parse_cron_schedule(cron_string):
     minute, hour, day_of_month, month_of_year, day_of_week = cron_string.split()
     return {
@@ -111,10 +117,8 @@ class JobDetailView(APIView):
 
     def get(self, request, job_id):
         try:
-            if request.user.is_staff:
-                job = Job.objects.get(id=job_id)
-            else:
-                job = Job.objects.get(id=job_id, owner=request.user)
+            job = get_job(job_id, request.user)
+                
             serializer = JobSerializer(job)
 
             last_run = job.runs.order_by("-created_at").first()
@@ -138,10 +142,7 @@ class EditJobView(APIView):
 
     def patch(self, request, job_id):
         try:
-            if request.user.is_staff:
-                job = Job.objects.get(id=job_id)
-            else:
-                job = Job.objects.get(id=job_id, owner=request.user)
+            job = get_job(job_id, request.user)
             serializer = JobSerializer(job, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -163,10 +164,7 @@ class DeleteJobView(APIView):
 
     def delete(self, request, job_id):
         try:
-            if request.user.is_staff:
-                job = Job.objects.get(id=job_id)
-            else:
-                job = Job.objects.get(id=job_id, owner=request.user)
+            job = get_job(job_id, request.user)
 
             # Delete associated job runs, files, and logs
             logs_dir = os.path.join(settings.MEDIA_ROOT, "logs")
@@ -212,10 +210,7 @@ class JobFilesView(APIView):
 
     def get(self, request, job_id):
         try:
-            if request.user.is_staff:
-                job = Job.objects.get(id=job_id)
-            else:
-                job = Job.objects.get(id=job_id, owner=request.user)
+            job = get_job(job_id, request.user)
         except Job.DoesNotExist:
             return Response(
                 {"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND
@@ -236,10 +231,7 @@ class UploadJobFileView(APIView):
     )
     def post(self, request, job_id):
         try:
-            if request.user.is_staff:
-                job = Job.objects.get(id=job_id)
-            else:
-                job = Job.objects.get(id=job_id, owner=request.user)
+            job = get_job(job_id, request.user)
         except Job.DoesNotExist:
             return Response(
                 {"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND
@@ -290,10 +282,7 @@ class RunJobView(APIView):
     def post(self, request, job_id):
         trigger_type = request.data.get("trigger_type", "manual")
         try:
-            if request.user.is_staff:
-                job = Job.objects.get(id=job_id)
-            else:
-                job = Job.objects.get(id=job_id, owner=request.user)
+            job = get_job(job_id, request.user)
 
         except Job.DoesNotExist:
             return Response(
@@ -325,10 +314,7 @@ class JobRunsView(APIView):
 
     def get(self, request, job_id):
         try:
-            if request.user.is_staff:
-                job = Job.objects.get(id=job_id)
-            else:
-                job = Job.objects.get(id=job_id, owner=request.user)
+            job = get_job(job_id, request.user)
         except Job.DoesNotExist:
             return Response(
                 {"error": "Job not found"}, status=status.HTTP_404_NOT_FOUND
