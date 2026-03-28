@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 
 import { useAuth } from "../context/AuthContext"
 import { apiFetch } from "../api/client"
+import { pageTitle } from "../hooks/pageTitle"
 
 
 export default function LoginPage() {
@@ -11,6 +12,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+
+  pageTitle("Login");
+
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -25,7 +29,7 @@ export default function LoginPage() {
       const data = await response.json()
 
       if (response.ok) {
-        login(data.access)
+        login(data.access, data.refresh)
         navigate("/")
       } else {
         alert("Login failed: " + (data.detail || "Unknown error"))

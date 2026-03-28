@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { apiFetch } from "../api/client"
+import { pageTitle } from "../hooks/pageTitle"
 import { readableSchedule } from "../utils/cron"
 import StatusBadge from "../components/StatusBadge"
 
@@ -38,6 +39,8 @@ export default function ViewJobDetails() {
   const [loadingJobRuns, setLoadingJobRuns] = useState(true)
 
   const navigate = useNavigate()
+
+  pageTitle(job ? `Job Details - ${job.name}` : "Loading job details...")
 
   async function runJob() {
     try {

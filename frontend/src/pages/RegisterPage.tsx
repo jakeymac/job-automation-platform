@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router"
 import { apiFetch } from "../api/client"
+import { pageTitle } from "../hooks/pageTitle"
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -26,6 +27,9 @@ export default function RegisterPage() {
     emailValid === true && email !== "" &&
     passwordValid === true && password !== "" &&
     !checkingUsername && !checkingEmail && !loading
+
+  pageTitle("Register");
+
 
   async function checkUsername(name: string) {
     if (!name) return

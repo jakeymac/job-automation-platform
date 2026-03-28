@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { apiFetch } from "../api/client"
+import { pageTitle } from "../hooks/pageTitle"
 import StatusBadge from "../components/StatusBadge"
 
 interface Job {
@@ -18,6 +19,8 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true)
 
   const navigate = useNavigate()
+
+  pageTitle("Home")
 
   useEffect(() => {
     if (authLoading) {

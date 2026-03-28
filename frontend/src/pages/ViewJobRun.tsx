@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router"
 import { apiFetch } from "../api/client"
+import { pageTitle } from "../hooks/pageTitle"
 
 interface JobRun {
   id: number
@@ -21,6 +22,9 @@ export default function ViewJobRun() {
   const [run, setRun] = useState<JobRun | null>(null)
   const [logs, setLogs] = useState("")
   const [loading, setLoading] = useState(true)
+
+  pageTitle(run ? `Job Run #${run.id} - ${run.status}` : "Loading run details...")
+
 
   useEffect(() => {
     async function loadRun() {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { apiFetch } from "../api/client"
 import { readableSchedule } from "../utils/cron"
+import { pageTitle } from "../hooks/pageTitle"
 
 interface Job {
   id: number
@@ -32,6 +33,8 @@ export default function EditJobPage() {
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([])
   const [uploading, setUploading] = useState(false)
   
+  pageTitle(isCreate ? "Create New Job" : job ? `Edit Job - ${job?.name || ""}` : "Edit Job")
+
 
   useEffect(() => {
     if (isCreate) {
