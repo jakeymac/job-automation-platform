@@ -95,16 +95,21 @@ main {
   border-radius: 6px;
 }
 
+.register-btn:hover {
+  background: #1e40af;
+}
+
 .logout-btn {
-  background: transparent;
+  background: #2563eb;
+  color: white !important;
+  padding: 6px 14px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
-  font-weight: 500;
-  color: #374151;
 }
 
 .logout-btn:hover {
-  color: #111827;
+  background: #1e40af;
 }
 
 /* Authentication Pages */
