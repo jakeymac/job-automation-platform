@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { useNavigate } from "react-router-dom"
 
 interface AuthContextType {
   isAuthenticated: boolean
@@ -12,6 +13,7 @@ const AuthContext = createContext<AuthContextType | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const token = localStorage.getItem("access_token")
@@ -29,6 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("access_token")
     localStorage.removeItem("refresh_token")
     setIsAuthenticated(false)
+    navigate("/login")
   }
 
   return (

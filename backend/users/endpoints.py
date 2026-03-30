@@ -73,3 +73,17 @@ class IsEmailValidView(APIView):
             )
 
         return Response({"valid": True})
+
+
+class UserDetailView(APIView):
+    """Returns details about the currently authenticated user."""
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return Response(
+                {"error": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
