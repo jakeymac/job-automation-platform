@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .endpoints import IsEmailValidView, IsUsernameValidView, RegisterUserView, UserDetailView
+from .endpoints import (
+    IsEmailValidView,
+    IsUsernameValidView,
+    RegisterUserView,
+    UserDetailView,
+)
 
 urlpatterns = [
     path("register/", RegisterUserView.as_view(), name="register"),
