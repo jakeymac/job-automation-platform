@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { apiFetch } from "../api/client"
-import { pageTitle } from "../hooks/pageTitle"
+import { usePageTitle } from "../hooks/usePageTitle"
 import { readableSchedule } from "../utils/cron"
 import StatusBadge from "../components/StatusBadge"
 
@@ -40,7 +40,7 @@ export default function ViewJobDetails() {
 
   const navigate = useNavigate()
 
-  pageTitle(loadingJobDetails ? "Loading job..." : job ? `Job Details - ${job.name}` : "Job not found")
+  usePageTitle(loadingJobDetails ? "Loading job..." : job ? `Job Details - ${job.name}` : "Job not found")
 
   async function runJob() {
     try {

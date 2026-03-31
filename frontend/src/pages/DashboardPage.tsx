@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useAuth } from "../context/AuthContext"
 import { apiFetch } from "../api/client"
-import { pageTitle } from "../hooks/pageTitle"
-import { requireAuth } from "../hooks/requireAuth"
+import { usePageTitle } from "../hooks/usePageTitle"
+import { useRequireAuth } from "../hooks/useRequireAuth"
 import StatusBadge from "../components/StatusBadge"
 
 interface Job {
@@ -15,16 +14,13 @@ interface Job {
 }
 
 export default function JobsPage() {
-  const { isAuthenticated, authLoading } = requireAuth()
+  const { isAuthenticated, authLoading } = useRequireAuth()
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
 
   const navigate = useNavigate()
 
-  pageTitle("Home")
-
-  requireAuth()
-
+  usePageTitle("Home")
 
   useEffect(() => {
     let interval: number

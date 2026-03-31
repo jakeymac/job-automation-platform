@@ -3,7 +3,7 @@ import { useNavigate } from "react-router"
 
 import { useAuth } from "../context/AuthContext"
 import { apiFetch } from "../api/client"
-import { pageTitle } from "../hooks/pageTitle"
+import { usePageTitle } from "../hooks/usePageTitle"
 
 
 export default function LoginPage() {
@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  pageTitle("Login");
+  usePageTitle("Login");
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()

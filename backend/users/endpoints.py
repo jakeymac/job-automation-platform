@@ -87,3 +87,23 @@ class UserDetailView(APIView):
 
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+class UpdateUserDetailView(APIView):
+    """Allows the authenticated user to update their account details."""
+
+    def put(self, request):
+        breakpoint()
+        if not request.user.is_authenticated:
+            return Response(
+                {"error": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

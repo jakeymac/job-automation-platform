@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router"
 import { apiFetch } from "../api/client"
-import { pageTitle } from "../hooks/pageTitle"
+import { usePageTitle } from "../hooks/usePageTitle"
 
 interface JobRun {
   id: number
@@ -24,7 +24,7 @@ export default function ViewJobRun() {
   const [loading, setLoading] = useState(true)
 
 
-  pageTitle(loading ? "Loading run details..." : run ? `Job Run #${run.id} - ${run.status}` : "Run not found")
+  usePageTitle(loading ? "Loading run details..." : run ? `Job Run #${run.id} - ${run.status}` : "Run not found")
 
   useEffect(() => {
     async function loadRun() {
