@@ -93,7 +93,6 @@ class UpdateUserDetailView(APIView):
     """Allows the authenticated user to update their account details."""
 
     def put(self, request):
-        breakpoint()
         if not request.user.is_authenticated:
             return Response(
                 {"error": "Authentication required"},
