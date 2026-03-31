@@ -61,6 +61,9 @@ main {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
   font-size: 18px;
   text-decoration: none;
@@ -72,6 +75,11 @@ main {
   color: #2563eb;
 }
 
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
 .nav {
   display: flex;
   align-items: center;

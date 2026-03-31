@@ -8,6 +8,7 @@ export default function Header() {
     <header className="header">
       <div className="header-left">
         <Link to="/" className="logo">
+          <img src="/icon.png" alt="Logo" className="logo-icon" />
           Automated Jobs
         </Link>
 
