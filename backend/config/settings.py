@@ -197,3 +197,5 @@ EMAIL_HOST = "email-smtp.us-east-2.amazonaws.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+JOB_NOTIFICATION_EMAIL = "job-run-notifications@automated-jobs.com"

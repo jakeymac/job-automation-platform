@@ -69,7 +69,7 @@ def send_job_notification(self, job_run_id):
     recipient_list = [run.job.owner.email]
 
     try:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list)
+        send_mail(subject, message, settings.JOB_NOTIFICATION_EMAIL, recipient_list)
         run.email_status = "SENT"
         run.email_sent_at = timezone.now()
         run.save(update_fields=["email_status", "email_sent_at"])
