@@ -51,14 +51,14 @@ def send_job_notification(self, job_run_id):
                 message += "\n\nLast log output:\n" + "".join(last_lines)
         except Exception:
             pass
-        email = run.job.owner.email
-        if not email:
-            logger.warning(f"No email found for user {run.job.owner.username}, cannot send notification for JobRun {run.id}")
-            run.email_status = "FAILED"
-            run.email_error = "No email address found for user"
-            run.save(update_fields=["email_status", "email_error"])
-            return
-        recipient_list = [run.job.owner.email]
+    email = run.job.owner.email
+    if not email:
+        logger.warning(f"No email found for user {run.job.owner.username}, cannot send notification for JobRun {run.id}")
+        run.email_status = "FAILED"
+        run.email_error = "No email address found for user"
+        run.save(update_fields=["email_status", "email_error"])
+        return
+    recipient_list = [run.job.owner.email]
 
     try:
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list)
