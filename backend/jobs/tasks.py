@@ -5,8 +5,8 @@ import subprocess
 
 from celery import shared_task
 from django.conf import settings
-from django.utils import timezone
 from django.core.mail import send_mail
+from django.utils import timezone
 
 from .models import JobRun
 
@@ -41,11 +41,15 @@ def send_job_notification(self, job_run_id):
 
     if run.status == "SUCCESS":
         subject = f"Job '{run.job.name}' Completed Successfully"
-        message = f"The job '{run.job.name}' has completed successfully.\n\nDuration: {run.duration_seconds:.2f} seconds.\n\nYou can view the logs for this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
+        message = f"The job '{run.job.name}' has completed successfully.\n\n"
+        f"Duration: {run.duration_seconds:.2f} seconds.\n\nYou can view the logs for"
+        f"this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
         recipient_list = [run.job.owner.email]
     else:
         subject = f"Job '{run.job.name}' Failed"
-        message = f"The job '{run.job.name}' has failed.\n\nDuration: {run.duration_seconds:.2f} seconds.\n\nYou can view the logs for this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
+        message = f"The job '{run.job.name}' has failed.\n\nDuration: "
+        f"{run.duration_seconds:.2f} seconds.\n\nYou can view the logs"
+        f"for this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
         try:
             with run.log_file.open() as f:
                 last_lines = f.readlines()[-10:]
@@ -55,7 +59,8 @@ def send_job_notification(self, job_run_id):
     email = run.job.owner.email
     if not email:
         logger.warning(
-            f"No email found for user {run.job.owner.username}, cannot send notification for JobRun {run.id}"
+            f"No email found for user {run.job.owner.username}, "
+            f"cannot send notification for JobRun {run.id}"
         )
         run.email_status = "FAILED"
         run.email_error = "No email address found for user"
