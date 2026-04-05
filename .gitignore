@@ -5,4 +5,5 @@ backend/db.sqlite3
 !frontend/.env.development
 job_files
 job_logs
+media
 .DS_Store
