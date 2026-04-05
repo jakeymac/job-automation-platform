@@ -23,6 +23,7 @@ def run_scheduled_job(job_id):
 
     execute_job_run.delay(run.id)
 
+
 @shared_task(bind=True, max_retries=3)
 def send_job_notification(self, job_run_id):
     try:
@@ -30,14 +31,14 @@ def send_job_notification(self, job_run_id):
     except JobRun.DoesNotExist:
         logger.warning(f"JobRun with id {job_run_id} does not exist")
         return
-    
+
     if run.email_status == "SENT":
         logger.info(f"Email already sent for JobRun {run.id}, skipping.")
         return
 
     run.email_status = "PENDING"
     run.save(update_fields=["email_status"])
-    
+
     if run.status == "SUCCESS":
         subject = f"Job '{run.job.name}' Completed Successfully"
         message = f"The job '{run.job.name}' has completed successfully.\n\nDuration: {run.duration_seconds:.2f} seconds.\n\nYou can view the logs for this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
@@ -53,7 +54,9 @@ def send_job_notification(self, job_run_id):
             pass
     email = run.job.owner.email
     if not email:
-        logger.warning(f"No email found for user {run.job.owner.username}, cannot send notification for JobRun {run.id}")
+        logger.warning(
+            f"No email found for user {run.job.owner.username}, cannot send notification for JobRun {run.id}"
+        )
         run.email_status = "FAILED"
         run.email_error = "No email address found for user"
         run.save(update_fields=["email_status", "email_error"])
@@ -71,7 +74,8 @@ def send_job_notification(self, job_run_id):
         run.email_error = str(e)
         run.save(update_fields=["email_status", "email_error"])
         logger.error(f"Error sending notification email for JobRun {run.id}: {e}")
-        raise self.retry(exc=e, countdown=60 * (2 ** self.request.retries))
+        raise self.retry(exc=e, countdown=60 * (2**self.request.retries))
+
 
 @shared_task
 def execute_job_run(job_run_id):

@@ -26,6 +26,7 @@ MEDIA_URL = "/media/"
 # Only load .env in local development
 if os.path.exists(BASE_DIR / "../.env"):
     from dotenv import load_dotenv
+
     load_dotenv(BASE_DIR / "../.env")
 
 # Quick-start development settings - unsuitable for production
