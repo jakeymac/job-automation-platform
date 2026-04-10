@@ -15,6 +15,9 @@ interface JobRun {
   finished_at: string | null
   duration_seconds: number | null
   log: string
+  email_status: string
+  email_sent_at: string | null
+  email_error: string | null
 }
 
 export default function ViewJobRun() {
@@ -34,6 +37,7 @@ export default function ViewJobRun() {
             throw new Error("Failed to load job run details")
         }
         const data = await response.json()
+        console.log("Run data:", data)
         setRun(data)
       } catch (error) {
         console.error(error)
@@ -92,6 +96,26 @@ export default function ViewJobRun() {
           <div><strong>Duration:</strong> {run.duration_seconds !== null ? `${run.duration_seconds} seconds` : "-"}</div>
           <div><strong>Triggered By:</strong> {run.triggered_by}</div>
           <div><strong>Trigger Type:</strong> {run.trigger_type}</div>
+          <div>
+            <strong>Email:</strong>{" "}
+            {run.email_status === "SENT" ? (
+              <span style={{ color: "green" }}>
+                Sent at {run.email_sent_at || "-"}
+              </span>
+            ) : run.email_status === "FAILED" && run.email_error ? (
+              <span
+                className="email-status"
+                style={{ color: "red", cursor: "pointer" }}
+              >
+                FAILED
+                <span className="email-error-tooltip">
+                  Error: {run.email_error}
+                </span>
+              </span>
+            ) : (
+              <span style={{ color: "orange" }}>{run.email_status}</span>
+            )}
+          </div>
         </div>
 
         <h2>Logs</h2>
