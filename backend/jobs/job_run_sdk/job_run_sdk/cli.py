@@ -4,7 +4,9 @@ from .client import set_job_run_state, set_job_run_email_content
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="job_run", description="CLI for interacting with the Job Run API")
+    parser = argparse.ArgumentParser(
+        prog="job_run", description="CLI for interacting with the Job Run API"
+    )
 
     subparsers = parser.add_subparsers(dest="command")
 

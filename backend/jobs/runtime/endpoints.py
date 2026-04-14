@@ -11,7 +11,6 @@ from .auth import authenticate_job_run
 from .permissions import HasValidAPIToken
 
 
-
 class SetJobRunStateView(APIView):
     authentication_classes = []  # Disable default authentication
     permission_classes = [HasValidAPIToken]

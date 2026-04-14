@@ -21,6 +21,7 @@ def create_api_token(run):
     run.save(update_fields=["api_token"])
     return token
 
+
 @shared_task
 def run_scheduled_job(job_id):
     from .models import Job, JobRun
@@ -46,7 +47,7 @@ def send_job_notification(self, job_run_id):
 
     run.email_status = "PENDING"
     run.save(update_fields=["email_status"])
-    
+
     if run.status == "SUCCESS":
         subject = f"Job '{run.job.name}' Completed Successfully"
         if run.custom_email_content:
@@ -129,7 +130,7 @@ def execute_job_run(job_run_id):
         run.save()
         shutil.rmtree(job_dir_container, ignore_errors=True)
         return
-    
+
     image = run.job.image
     if image in SUPPORTED_IMAGES:
         image = SUPPORTED_IMAGES[run.job.image]["image"]
