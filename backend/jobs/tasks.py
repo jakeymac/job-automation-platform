@@ -208,7 +208,19 @@ def execute_job_run(job_run_id):
 
     run.api_token = None
 
-    run.save()
+    # Update only the fields that have changed here
+    run.save(
+        update_fields=[
+            "exit_code",
+            "status",
+            "finished_at",
+            "duration_seconds",
+            "log_file",
+            "api_token",
+        ]
+    )
+
+    run.refresh_from_db()
 
     if run.status == "SUCCESS":
         job_state, _ = JobState.objects.get_or_create(job=run.job)
