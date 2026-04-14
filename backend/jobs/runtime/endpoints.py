@@ -1,13 +1,7 @@
-from rest_framework.decorators import (
-    authentication_classes,
-    permission_classes,
-)
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from ..models import Job, JobRun, JobState
-
-from .auth import authenticate_job_run
+from ..models import JobState
 from .permissions import HasValidAPIToken
 
 

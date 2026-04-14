@@ -1,6 +1,7 @@
 import argparse
 import json
-from .client import set_job_run_state, set_job_run_email_content
+
+from .client import set_job_run_email_content, set_job_run_state
 
 
 def main():
