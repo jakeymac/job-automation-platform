@@ -40,7 +40,14 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "18.191.192.9", "automated-jobs.com"]
+INTERNAL_API_HOSTNAME = os.getenv("INTERNAL_API_HOSTNAME", "host.docker.internal")
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "18.191.192.9",
+    "automated-jobs.com",
+    INTERNAL_API_HOSTNAME,
+]
 
 SITE_URL = "automated-jobs.com"
 
@@ -188,6 +195,11 @@ CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# Job Run SDK settings
+INTERNAL_API_URL = os.getenv(
+    "INTERNAL_API_URL", "http://host.docker.internal:8000/api/jobs"
+)
 
 # Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

@@ -15,6 +15,8 @@ interface Job {
 }
 
 export default function EditJobPage() {
+  const SUPPORTED_IMAGES = import.meta.env.VITE_SUPPORTED_IMAGES.split(",")
+
   const { id } = useParams()
   const isCreate = !id
   const navigate = useNavigate()
@@ -27,7 +29,9 @@ export default function EditJobPage() {
   const [description, setDescription] = useState("")
   const [schedule, setSchedule] = useState("")
   const [isActive, setIsActive] = useState(false)
-  const [image, setImage] = useState("python:3.11-slim")
+  const [useCustomImage, setUseCustomImage] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(SUPPORTED_IMAGES[0] || "")
+  const [customImage, setCustomImage] = useState("")
   const [command, setCommand] = useState("")
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([])
@@ -58,7 +62,13 @@ export default function EditJobPage() {
         setDescription(data.description)
         setSchedule(data.schedule)
         setIsActive(data.is_active)
-        setImage(data.image)
+        if (SUPPORTED_IMAGES.includes(data.image)) {
+          setSelectedImage(data.image)
+          setUseCustomImage(false)
+        } else {
+          setUseCustomImage(true)
+          setCustomImage(data.image)
+        }
         setCommand(data.command)
 
         // load existing files
@@ -149,7 +159,11 @@ export default function EditJobPage() {
     formData.append("description", description)
     formData.append("schedule", schedule)
     formData.append("is_active", String(isActive))
-    formData.append("image", image)
+    if (useCustomImage) {
+      formData.append("image", customImage)
+    } else {
+      formData.append("image", selectedImage)
+    }
     formData.append("command", command)
 
     try {
@@ -232,11 +246,37 @@ export default function EditJobPage() {
 
         <div className="form-field">
           <label>Docker Image</label>
-          <input
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-          placeholder="e.g. python:3.11-slim"
-          />
+          <label style={{ fontSize: "0.9em" }}>
+            <input
+              type="checkbox"
+              checked={useCustomImage}
+              onChange={(e) => {
+                const checked = e.target.checked
+                setUseCustomImage(checked)
+              }}
+            />
+            Use custom image
+          </label>
+          {useCustomImage ? (
+            <input
+              value={customImage}
+              onChange={(e) => {
+                setCustomImage(e.target.value)
+              }}
+              placeholder="e.g. myregistry.com/myimage:tag"
+            />
+          ) : (
+            <select
+              value={selectedImage}
+              onChange={(e) => {
+                setSelectedImage(e.target.value)
+              }}
+            >
+              {SUPPORTED_IMAGES.map((img) => (
+                <option key={img} value={img}>{img}</option>
+              ))}
+            </select>
+          )}
         </div>
         <div className="form-field">
           <label>Upload Files</label>

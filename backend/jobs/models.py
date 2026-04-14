@@ -1,4 +1,5 @@
 import os
+import hashlib
 
 from django.conf import settings
 from django.db import models
@@ -58,7 +59,9 @@ class JobRun(models.Model):
         FAILED = "FAILED", "Failed"
         CANCELLED = "CANCELLED", "Cancelled"
 
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="runs")
+    job = models.ForeignKey(
+        Job, on_delete=models.CASCADE, related_name="runs", db_index=True
+    )
     status = models.CharField(
         max_length=50, choices=Status.choices, default=Status.PENDING
     )
@@ -85,6 +88,33 @@ class JobRun(models.Model):
     )
     email_sent_at = models.DateTimeField(blank=True, null=True)
     email_error = models.TextField(blank=True, null=True)
+    custom_email_content = models.TextField(blank=True, null=True)
+
+    state_snapshot = models.JSONField(
+        blank=True, null=True
+    )  # Store the state of the job at the time of execution (before the job run starts)
+    updated_state = models.JSONField(
+        blank=True, null=True
+    )  # Updated state data after job execution
+
+    api_token = models.CharField(max_length=64, null=True, blank=True)
 
     def __str__(self):
         return f"{self.job.name} - {self.get_status_display()} - {self.started_at}"
+
+    def set_api_token(self, token):
+        self.api_token = hashlib.sha256(token.encode()).hexdigest()
+
+    def check_api_token(self, token):
+        if not self.api_token:
+            return False
+        return hashlib.sha256(token.encode()).hexdigest() == self.api_token
+
+
+class JobState(models.Model):
+    job = models.OneToOneField(Job, on_delete=models.CASCADE, related_name="state")
+    data = models.JSONField(default=dict)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.job.name} State"

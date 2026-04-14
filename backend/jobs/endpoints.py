@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Job, JobFile, JobRun
+from .models import Job, JobFile, JobRun, JobState
 from .serializers import JobRunSerializer, JobSerializer
 from .tasks import execute_job_run
 
@@ -98,6 +98,7 @@ class CreateJobView(APIView):
                     setup_periodic_task(
                         serializer.data["schedule"], serializer.instance
                     )
+                JobState.objects.create(job=serializer.instance, data={})
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

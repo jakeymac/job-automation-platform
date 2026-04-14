@@ -1,5 +1,6 @@
 import logging
 import os
+import secrets
 import shutil
 import subprocess
 
@@ -8,10 +9,17 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import timezone
 
-from .models import JobRun
+from .models import JobRun, JobState
+from .job_run_images import SUPPORTED_IMAGES
 
 logger = logging.getLogger(__name__)
 
+
+def create_api_token(run):
+    token = secrets.token_hex(32)
+    run.set_api_token(token)
+    run.save(update_fields=["api_token"])
+    return token
 
 @shared_task
 def run_scheduled_job(job_id):
@@ -38,10 +46,13 @@ def send_job_notification(self, job_run_id):
 
     run.email_status = "PENDING"
     run.save(update_fields=["email_status"])
-
+    
     if run.status == "SUCCESS":
         subject = f"Job '{run.job.name}' Completed Successfully"
-        message = f"The job '{run.job.name}' has completed successfully.\n\n"
+        if run.custom_email_content:
+            message = run.custom_email_content
+        else:
+            message = f"The job '{run.job.name}' has completed successfully.\n\n"
         f"Duration: {run.duration_seconds:.2f} seconds.\n\nYou can view the logs for"
         f"this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
         recipient_list = [run.job.owner.email]
@@ -106,9 +117,6 @@ def execute_job_run(job_run_id):
         destination = os.path.join(job_dir_container, os.path.basename(src))
         if os.path.abspath(src) != os.path.abspath(destination):
             shutil.copy(src, destination)
-    logger.info(f"Container job dir: {job_dir_container}")
-    logger.info(f"Host job dir: {job_dir_host}")
-    logger.info(f"Job dir contents: {os.listdir(job_dir_container)}")
     try:
         logs_dir = os.path.join(settings.MEDIA_ROOT, "job_logs")
         os.makedirs(logs_dir, exist_ok=True)
@@ -121,6 +129,24 @@ def execute_job_run(job_run_id):
         run.save()
         shutil.rmtree(job_dir_container, ignore_errors=True)
         return
+    
+    image = run.job.image
+    if image in SUPPORTED_IMAGES:
+        image = SUPPORTED_IMAGES[run.job.image]["image"]
+
+    api_token = create_api_token(run)
+    JOB_API_URL = settings.INTERNAL_API_URL
+
+    env = [
+        "-e",
+        f"JOB_ID={run.job.id}",
+        "-e",
+        f"RUN_ID={run.id}",
+        "-e",
+        f"API_TOKEN={api_token}",
+        "-e",
+        f"JOB_API_URL={JOB_API_URL}",
+    ]
 
     try:
         process = subprocess.Popen(
@@ -129,7 +155,7 @@ def execute_job_run(job_run_id):
                 "run",
                 "--rm",
                 "--network",
-                "none",
+                "bridge",
                 "--memory",
                 "512m",
                 "--cpus",
@@ -139,11 +165,12 @@ def execute_job_run(job_run_id):
                 "--read-only",
                 "--tmpfs",
                 "/tmp",
+                *env,
                 "-v",
                 f"{job_dir_host}:/workspace",
                 "-w",
                 "/workspace",
-                run.job.image,
+                image,
                 "bash",
                 "-c",
                 run.job.command or "echo 'No command specified'",
@@ -176,7 +203,20 @@ def execute_job_run(job_run_id):
 
     run.log_file.name = f"job_logs/job_run_{run.id}.log"
 
+    run.api_token = None
+
     run.save()
+
+    if run.status == "SUCCESS":
+        job_state, _ = JobState.objects.get_or_create(job=run.job)
+        if run.updated_state:
+            run_state = run.updated_state
+        elif run.state_snapshot:
+            run_state = run.state_snapshot
+        else:
+            run_state = {}
+        job_state.data = run_state
+        job_state.save()
 
     shutil.rmtree(job_dir_container, ignore_errors=True)
 

@@ -1,0 +1,12 @@
+[project]
+name = "job-run-sdk"
+version = "0.1.0"
+description = "SDK for Job Automation Platform"
+requires-python = ">=3.8"
+
+dependencies = [
+    "requests"
+]
+
+[project.scripts]
+job-run = "job_run_sdk.cli:main"

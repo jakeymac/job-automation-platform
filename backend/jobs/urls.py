@@ -15,6 +15,8 @@ from .endpoints import (
     UploadJobFileView,
 )
 
+from .runtime.endpoints import SetJobRunStateView, SetJobRunEmailContentView
+
 urlpatterns = [
     path("", ListJobsView.as_view(), name="list-jobs"),
     path("new/", CreateJobView.as_view(), name="create-job"),
@@ -39,5 +41,15 @@ urlpatterns = [
         "runs/<int:run_id>/logs/",
         JobRunLogsView.as_view(),
         name="job-run-logs",
+    ),
+    path(
+        "runs/set_run_state/<int:run_id>/",
+        SetJobRunStateView.as_view(),
+        name="set-job-run-state",
+    ),
+    path(
+        "runs/set_run_email_content/<int:run_id>/",
+        SetJobRunEmailContentView.as_view(),
+        name="set-job-run-email-content",
     ),
 ]
