@@ -15,7 +15,9 @@ interface Job {
 }
 
 export default function EditJobPage() {
-  const SUPPORTED_IMAGES = import.meta.env.VITE_SUPPORTED_IMAGES.split(",")
+  const SUPPORTED_IMAGES: string[] = (import.meta.env.VITE_SUPPORTED_IMAGES ?? "")
+  .split(",")
+  .filter(Boolean)
 
   const { id } = useParams()
   const isCreate = !id
