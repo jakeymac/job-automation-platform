@@ -22,7 +22,8 @@ jobs:
       - name: Build image
         run: |
           docker build \
-          -t ghcr.io/jakeymac/job-run:${{ matrix.base_images}} dockerfiles/${{ matrix.base_images }}/
+          -t ghcr.io/jakeymac/job-run:${{ matrix.base_images}} \
+          -f dockerfiles/${{ matrix.base_images }}/Dockerfile .
 
       - name: Push image
         run: |
