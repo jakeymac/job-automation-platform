@@ -157,7 +157,7 @@ def execute_job_run(job_run_id):
                 "docker",
                 "run",
                 "--rm",
-                "--network", 
+                "--network",
                 docker_network,
                 "--memory",
                 "512m",
