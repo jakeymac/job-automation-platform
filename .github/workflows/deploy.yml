@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version:
+        base_images:
           - python-3.10
           - python-3.11
           - python-3.12
@@ -22,11 +22,11 @@ jobs:
       - name: Build image
         run: |
           docker build \
-          -t ghcr.io/jakeymac/job-run:${{ matrix.python-version}} dockerfiles/python/${{ matrix.python-version }}/
+          -t ghcr.io/jakeymac/job-run:${{ matrix.base_images}} dockerfiles/${{ matrix.base_images }}/
 
       - name: Push image
         run: |
-          docker push ghcr.io/jakeymac/job-run:${{ matrix.python-version}}
+          docker push ghcr.io/jakeymac/job-run:${{ matrix.base_images}}
 
   deploy:
     needs: build-job-run-images
