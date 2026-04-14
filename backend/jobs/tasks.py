@@ -138,6 +138,8 @@ def execute_job_run(job_run_id):
     api_token = create_api_token(run)
     JOB_API_URL = settings.INTERNAL_API_URL
 
+    docker_network = os.environ.get("DOCKER_NETWORK", "job-platform-network")
+
     env = [
         "-e",
         f"JOB_ID={run.job.id}",
@@ -155,8 +157,8 @@ def execute_job_run(job_run_id):
                 "docker",
                 "run",
                 "--rm",
-                "--network",
-                "bridge",
+                "--network", 
+                docker_network,
                 "--memory",
                 "512m",
                 "--cpus",

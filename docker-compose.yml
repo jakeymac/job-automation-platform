@@ -13,12 +13,16 @@ services:
       - POSTGRES_INITDB_ARGS=--auth-host=md5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   redis:
     image: redis:7
     restart: always
     volumes:
       - redis_data:/data
+    networks:
+      - app-network
 
   backend:
     image: ghcr.io/jakeymac/job-automation-platform-backend:latest
@@ -44,6 +48,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    networks:
+      - app-network
     
 
   worker:
@@ -61,6 +67,8 @@ services:
       - redis
     env_file:
       - .env
+    networks:
+      - app-network
 
   beat:
     image: ghcr.io/jakeymac/job-automation-platform-backend:latest
@@ -76,6 +84,8 @@ services:
       - backend
     env_file:
       - .env
+    networks:
+      - app-network
 
   frontend:
     image: ghcr.io/jakeymac/job-automation-platform-frontend:latest
@@ -84,6 +94,8 @@ services:
       - "3000:80"
     depends_on:
       - backend
+    networks:
+      - app-network
 
   nginx:
     image: nginx:alpine
@@ -99,7 +111,13 @@ services:
     depends_on:
       - frontend
       - backend
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  app-network:
+    name: job-platform-network
