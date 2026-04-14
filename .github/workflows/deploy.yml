@@ -22,13 +22,14 @@ jobs:
       - name: Build image
         run: |
           docker build \
-          -t ghcr.io/jakeymac/job-run:${{ matrix.python-version}} ./dockerfiles/python/${{ matrix.python-version }}/
+          -t ghcr.io/jakeymac/job-run:${{ matrix.python-version}} dockerfiles/python/${{ matrix.python-version }}/
 
       - name: Push image
         run: |
           docker push ghcr.io/jakeymac/job-run:${{ matrix.python-version}}
 
   deploy:
+    needs: build-job-run-images
     runs-on: ubuntu-latest
 
     steps:
