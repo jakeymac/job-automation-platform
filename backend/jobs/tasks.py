@@ -6,7 +6,7 @@ import subprocess
 
 from celery import shared_task
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.utils import timezone
 
 from .job_run_images import SUPPORTED_IMAGES
@@ -52,16 +52,29 @@ def send_job_notification(self, job_run_id):
         subject = f"Job '{run.job.name}' Completed Successfully"
         if run.custom_email_content:
             message = run.custom_email_content
+            if not message.strip():
+                message = "Job completed but produced no output."
+            logger.warning(f"Custom email content for JobRun {run.id}: {run.custom_email_content}")
+            if run.custom_email_content:
+                logger.warning(f"EMAIL BODY LENGTH: {len(run.custom_email_content)} characters")
+                logger.warning(f"EMAIL BODY PREVIEW: {run.custom_email_content[:500]}")  # Log the first 500 characters
+            else:
+                logger.warning("Custom email content is empty or None.")
         else:
-            message = f"The job '{run.job.name}' has completed successfully.\n\n"
-        f"Duration: {run.duration_seconds:.2f} seconds.\n\nYou can view the logs for"
-        f"this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
+             message = (
+                f"The job '{run.job.name}' has completed successfully.\n\n"
+                f"Duration: {run.duration_seconds:.2f} seconds.\n\n"
+                f"You can view the logs for this run at: "
+                f"{settings.SITE_URL}/jobs/runs/{run.id}"
+            )
         recipient_list = [run.job.owner.email]
     else:
         subject = f"Job '{run.job.name}' Failed"
-        message = f"The job '{run.job.name}' has failed.\n\nDuration: "
-        f"{run.duration_seconds:.2f} seconds.\n\nYou can view the logs"
-        f"for this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
+        message = (
+            f"The job '{run.job.name}' has failed.\n\nDuration: "
+            f"{run.duration_seconds:.2f} seconds.\n\nYou can view the logs"
+            f"for this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
+        )
         try:
             with run.log_file.open() as f:
                 last_lines = f.readlines()[-10:]
@@ -81,7 +94,11 @@ def send_job_notification(self, job_run_id):
     recipient_list = [run.job.owner.email]
 
     try:
-        send_mail(subject, message, settings.JOB_NOTIFICATION_EMAIL, recipient_list)
+        logger.warning(f"FINAL EMAIL BODY:\n{message}")
+        email = EmailMessage(subject=subject, body=message, from_email=settings.JOB_NOTIFICATION_EMAIL, to=recipient_list)
+        email.encoding = "utf-8"
+        email.content_subtype = "plain"
+        email.send()
         run.email_status = "SENT"
         run.email_sent_at = timezone.now()
         run.save(update_fields=["email_status", "email_sent_at"])
