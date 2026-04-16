@@ -47,7 +47,8 @@ def send_job_notification(self, job_run_id):
 
     if not updated:
         logger.info(
-            f"Email already being processed or sent for JobRun {subprocess.run.id}, skipping."
+            f"Email already being processed or sent for JobRun {subprocess.run.id}"
+            f", skipping."
         )
         return
     run.save(update_fields=["email_status"])
