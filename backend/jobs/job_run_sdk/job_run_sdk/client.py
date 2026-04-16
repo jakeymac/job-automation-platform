@@ -28,7 +28,7 @@ def set_job_run_state(updated_values):
 def _sanitize_email_content(content):
     if not content:
         return "No content provided"
-    
+
     try:
         content = content.encode("utf-8", "replace").decode("utf-8")
     except Exception as e:
@@ -38,6 +38,7 @@ def _sanitize_email_content(content):
     content = content.replace("\x00", "")
     return content
 
+
 def set_job_run_email_content(email_content):
     url = f"{JOB_RUN_API_URL}/runs/set_run_email_content/{JOB_RUN_ID}/"
     headers = form_headers()
@@ -46,5 +47,5 @@ def set_job_run_email_content(email_content):
         url, json={"custom_email_content": sanitized_content}, headers=headers
     )
     response.raise_for_status()
-    
+
     return response.json()
