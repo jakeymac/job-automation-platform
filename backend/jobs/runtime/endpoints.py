@@ -5,6 +5,21 @@ from ..models import JobState
 from .permissions import HasValidAPIToken
 
 
+class GetJobStateView(APIView):
+    authentication_classes = []  # Disable default authentication
+    permission_classes = [HasValidAPIToken]
+
+    def get(self, request, job_id):
+        job_state = JobState.objects.get(job_id=job_id)
+        return Response(
+            {
+                "status": "ok",
+                "message": "Fetched job state successfully",
+                "job_id": job_id,
+                "data": job_state.data,
+            }
+        )
+
 class SetJobRunStateView(APIView):
     authentication_classes = []  # Disable default authentication
     permission_classes = [HasValidAPIToken]

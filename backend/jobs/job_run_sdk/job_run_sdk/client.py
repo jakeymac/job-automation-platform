@@ -8,6 +8,7 @@ import requests
 logger = logging.getLogger(__name__)
 
 API_TOKEN = os.getenv("API_TOKEN")
+JOB_ID = os.getenv("JOB_ID")
 JOB_RUN_ID = os.getenv("RUN_ID")
 JOB_RUN_API_URL = os.getenv("JOB_API_URL")
 
@@ -19,6 +20,13 @@ def form_headers():
         "Authorization": f"Bearer {API_TOKEN}",
         "Content-Type": "application/json",
     }
+
+def get_job_state():
+    url = f"{JOB_RUN_API_URL}/runs/get_job_state/{JOB_ID}/"
+    headers = form_headers()
+    response = requests.get(url, headers=headers, timeout=10)
+    response.raise_for_status()
+    return response.json()
 
 
 def set_job_run_state(updated_values):
