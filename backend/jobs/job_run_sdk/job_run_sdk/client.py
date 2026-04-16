@@ -21,8 +21,9 @@ def form_headers():
         "Content-Type": "application/json",
     }
 
+
 def get_job_state():
-    url = f"{JOB_RUN_API_URL}/runs/get_job_state/{JOB_ID}/"
+    url = f"{JOB_RUN_API_URL}/runs/get_job_state/{JOB_RUN_ID}/"
     headers = form_headers()
     response = requests.get(url, headers=headers, timeout=10)
     response.raise_for_status()

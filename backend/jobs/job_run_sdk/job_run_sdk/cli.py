@@ -1,7 +1,10 @@
 import argparse
 import json
+import logging
 
-from .client import set_job_run_email_content, set_job_run_state, get_job_state
+from .client import get_job_state, set_job_run_email_content, set_job_run_state
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -27,15 +30,15 @@ def main():
     if args.command == "set_state":
         data = json.loads(args.data)
         set_job_run_state(data)
-        print("Job run state updated successfully")
+        logger.info("Job run state updated successfully")
 
     elif args.command == "get_state":
         state = get_job_state()
-        print(json.dumps(state))
+        logger.info(json.dumps(state))
 
     elif args.command == "email_content":
         set_job_run_email_content(args.text)
-        print("Email content updated successfully")
+        logger.info("Email content updated successfully")
 
 
 if __name__ == "__main__":

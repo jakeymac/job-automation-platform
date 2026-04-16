@@ -20,6 +20,7 @@ class GetJobStateView(APIView):
             }
         )
 
+
 class SetJobRunStateView(APIView):
     authentication_classes = []  # Disable default authentication
     permission_classes = [HasValidAPIToken]
