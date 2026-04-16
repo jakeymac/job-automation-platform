@@ -1,7 +1,8 @@
 import logging
 import os
-import unicodedata
 import re
+import unicodedata
+
 import requests
 
 logger = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ def form_headers():
 def set_job_run_state(updated_values):
     url = f"{JOB_RUN_API_URL}/runs/set_run_state/{JOB_RUN_ID}/"
     headers = form_headers()
-    response = requests.post(url, json=updated_values, headers=headers)
+    response = requests.post(url, json=updated_values, headers=headers, timeout=10)
     response.raise_for_status()
     return response.json()
 
@@ -31,23 +32,17 @@ def set_job_run_state(updated_values):
 def _sanitize_email_content(content):
     if not isinstance(content, str):
         content = str(content)
-
     # Fix broken encoding safely
     content = content.encode("utf-8", "replace").decode("utf-8")
-
     # Normalize unicode
     content = unicodedata.normalize("NFKC", content)
-
     # Remove control characters (but keep newlines)
-    content = re.sub(r"[^\x20-\x7E\n]", "", content)
-
+    content = re.sub(r"[\x00-\x08\x0B-\x1F\x7F]", "", content)
     # Clean up whitespace
     content = re.sub(r"\n{3,}", "\n\n", content).strip()
-
     # Enforce max length
     if len(content) > MAX_EMAIL_LENGTH:
         content = content[:MAX_EMAIL_LENGTH] + "\n\n... (truncated)"
-
     if not content:
         return "Job completed but produced no readable output."
 
@@ -59,7 +54,10 @@ def set_job_run_email_content(email_content):
     headers = form_headers()
     sanitized_content = _sanitize_email_content(email_content)
     response = requests.post(
-        url, json={"custom_email_content": sanitized_content}, headers=headers
+        url,
+        json={"custom_email_content": sanitized_content},
+        headers=headers,
+        timeout=10,
     )
     response.raise_for_status()
 

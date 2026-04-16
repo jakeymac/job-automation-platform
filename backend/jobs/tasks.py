@@ -41,11 +41,15 @@ def send_job_notification(self, job_run_id):
         logger.warning(f"JobRun with id {job_run_id} does not exist")
         return
 
-    if run.email_status == "SENT":
-        logger.info(f"Email already sent for JobRun {run.id}, skipping.")
-        return
+    updated = JobRun.objects.filter(
+        id=run.id, email_status__in=[None, "PENDING"]
+    ).update(email_status="SENDING")
 
-    run.email_status = "PENDING"
+    if not updated:
+        logger.info(
+            f"Email already being processed or sent for JobRun {subprocess.run.id}, skipping."
+        )
+        return
     run.save(update_fields=["email_status"])
 
     if run.status == "SUCCESS":
@@ -61,7 +65,6 @@ def send_job_notification(self, job_run_id):
                 f"You can view the logs for this run at: "
                 f"{settings.SITE_URL}/jobs/runs/{run.id}"
             )
-        recipient_list = [run.job.owner.email]
     else:
         subject = f"Job '{run.job.name}' Failed"
         message = (
