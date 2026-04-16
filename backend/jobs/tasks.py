@@ -78,7 +78,7 @@ def send_job_notification(self, job_run_id):
         subject = f"Job '{run.job.name}' Failed"
         message = (
             f"The job '{run.job.name}' has failed.\n\nDuration: "
-            f"{run.duration_seconds:.2f} seconds.\n\nYou can view the logs"
+            f"{run.duration_seconds:.2f} seconds.\n\nYou can view the logs "
             f"for this run at: {settings.SITE_URL}/jobs/runs/{run.id}"
         )
         try:
