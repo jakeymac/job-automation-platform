@@ -54,18 +54,6 @@ def send_job_notification(self, job_run_id):
             message = run.custom_email_content
             if not message.strip():
                 message = "Job completed but produced no output."
-            logger.warning(
-                f"Custom email content for JobRun {run.id}: {run.custom_email_content}"
-            )
-            if run.custom_email_content:
-                logger.warning(
-                    f"EMAIL BODY LENGTH: {len(run.custom_email_content)} characters"
-                )
-                logger.warning(
-                    f"EMAIL BODY PREVIEW: {run.custom_email_content[:500]}"
-                )  # Log the first 500 characters
-            else:
-                logger.warning("Custom email content is empty or None.")
         else:
             message = (
                 f"The job '{run.job.name}' has completed successfully.\n\n"
@@ -100,7 +88,6 @@ def send_job_notification(self, job_run_id):
     recipient_list = [run.job.owner.email]
 
     try:
-        logger.warning(f"FINAL EMAIL BODY:\n{message}")
         email = EmailMessage(
             subject=subject,
             body=message,

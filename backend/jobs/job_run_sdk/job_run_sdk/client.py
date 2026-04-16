@@ -1,6 +1,7 @@
 import logging
 import os
-
+import unicodedata
+import re
 import requests
 
 logger = logging.getLogger(__name__)
@@ -8,6 +9,8 @@ logger = logging.getLogger(__name__)
 API_TOKEN = os.getenv("API_TOKEN")
 JOB_RUN_ID = os.getenv("RUN_ID")
 JOB_RUN_API_URL = os.getenv("JOB_API_URL")
+
+MAX_EMAIL_LENGTH = 5000
 
 
 def form_headers():
@@ -26,16 +29,28 @@ def set_job_run_state(updated_values):
 
 
 def _sanitize_email_content(content):
-    if not content:
-        return "No content provided"
-
-    try:
-        content = content.encode("utf-8", "replace").decode("utf-8")
-    except Exception as e:
-        logger.error(f"Error encoding email content: {e}")
+    if not isinstance(content, str):
         content = str(content)
 
-    content = content.replace("\x00", "")
+    # Fix broken encoding safely
+    content = content.encode("utf-8", "replace").decode("utf-8")
+
+    # Normalize unicode
+    content = unicodedata.normalize("NFKC", content)
+
+    # Remove control characters (but keep newlines)
+    content = re.sub(r"[^\x20-\x7E\n]", "", content)
+
+    # Clean up whitespace
+    content = re.sub(r"\n{3,}", "\n\n", content).strip()
+
+    # Enforce max length
+    if len(content) > MAX_EMAIL_LENGTH:
+        content = content[:MAX_EMAIL_LENGTH] + "\n\n... (truncated)"
+
+    if not content:
+        return "Job completed but produced no readable output."
+
     return content
 
 
