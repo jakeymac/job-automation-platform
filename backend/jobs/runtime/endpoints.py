@@ -9,13 +9,15 @@ class GetJobStateView(APIView):
     authentication_classes = []  # Disable default authentication
     permission_classes = [HasValidAPIToken]
 
-    def get(self, request, job_id):
-        job_state = JobState.objects.get(job_id=job_id)
+    def get(self, request, run_id):
+        run = request.job_run # This is set by the permission class after authentication
+        job = run.job
+        job_state = JobState.objects.get(job=job)
         return Response(
             {
                 "status": "ok",
                 "message": "Fetched job state successfully",
-                "job_id": job_id,
+                "job_id": job.id,
                 "data": job_state.data,
             }
         )
