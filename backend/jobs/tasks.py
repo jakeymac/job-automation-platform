@@ -153,7 +153,7 @@ def execute_job_run(job_run_id):
     image = run.job.image
     if image in SUPPORTED_IMAGES:
         image = SUPPORTED_IMAGES[run.job.image]["image"]
-    
+
     try:
         logger.info(f"Pulling latest image: {image} for JobRun {run.id}")
         subprocess.run(
@@ -164,9 +164,7 @@ def execute_job_run(job_run_id):
             text=True,
         )
     except subprocess.CalledProcessError as e:
-        logger.error(
-            f"Error pulling image {image} for JobRun {run.id}: {e.stderr}"
-        )
+        logger.error(f"Error pulling image {image} for JobRun {run.id}: {e.stderr}")
         with open(log_path, "a") as log_file:
             log_file.write(f"Error pulling image {image}: {e.stderr}\n")
         run.status = "FAILED"
