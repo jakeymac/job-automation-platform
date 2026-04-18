@@ -10,7 +10,8 @@ class GetJobStateView(APIView):
     permission_classes = [HasValidAPIToken]
 
     def get(self, request, run_id):
-        run = request.job_run # This is set by the permission class after authentication
+        # This is set by the permission class after authentication
+        run = request.job_run
         job = run.job
         job_state = JobState.objects.get(job=job)
         return Response(
@@ -28,10 +29,8 @@ class SetJobRunStateView(APIView):
     permission_classes = [HasValidAPIToken]
 
     def post(self, request, run_id):
-
-        run = (
-            request.job_run
-        )  # This is set by the permission class after authentication
+        # This is set by the permission class after authentication
+        run = request.job_run
         current_job_state = JobState.objects.get(job=run.job)
         if current_job_state.data is None:
             current_data = {}
@@ -61,9 +60,8 @@ class SetJobRunEmailContentView(APIView):
     permission_classes = [HasValidAPIToken]
 
     def post(self, request, run_id):
-        run = (
-            request.job_run
-        )  # This is set by the permission class after authentication
+        # This is set by the permission class after authentication
+        run = request.job_run
         custom_content = request.data.get("custom_email_content", "")
         run.custom_email_content = custom_content
         run.save()
