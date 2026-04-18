@@ -21,6 +21,7 @@ def authenticate_job_run(request, run_id):
         raise PermissionDenied("Invalid run ID")
 
     if run.status != JobRun.Status.RUNNING:
+        logger.debug("Job run %s is not active. Current status: %s", run_id, run.status)
         raise PermissionDenied("Job run is not active")
 
     if not run.check_api_token(token):
