@@ -31,7 +31,8 @@ class SetJobRunStateView(APIView):
     def post(self, request, run_id):
         # This is set by the permission class after authentication
         run = request.job_run
-        current_job_state = JobState.objects.get(job=run.job)
+        job = run.job
+        current_job_state = JobState.objects.get(job=job)
         if current_job_state.data is None:
             current_data = {}
         else:
@@ -50,7 +51,7 @@ class SetJobRunStateView(APIView):
                 "status": "ok",
                 "message": "Updated job run's updated state successfully",
                 "run_id": run.id,
-                "job_id": run.job.id,
+                "job_id": job.id,
             }
         )
 

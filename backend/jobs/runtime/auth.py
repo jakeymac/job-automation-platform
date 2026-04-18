@@ -5,6 +5,10 @@ from ..models import JobRun
 
 def authenticate_job_run(request, run_id):
     auth_header = request.headers.get("Authorization")
+    print("AUTH HEADER:", request.headers.get("Authorization"))
+    print("RUN ID:", run_id)
+    print("RUN STATUS:", run.status)
+    print("EXPECTED TOKEN:", run.api_token)
     if not auth_header or not auth_header.startswith("Bearer "):
         raise PermissionDenied("Missing token")
 

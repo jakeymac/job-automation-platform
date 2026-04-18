@@ -24,6 +24,7 @@ def form_headers():
 
 def get_job_state():
     url = f"{JOB_RUN_API_URL}/runs/get_job_state/{JOB_RUN_ID}/"
+    print("DEBUG URL:", url)
     headers = form_headers()
     response = requests.get(url, headers=headers, timeout=10)
     response.raise_for_status()
