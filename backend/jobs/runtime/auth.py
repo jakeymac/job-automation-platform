@@ -3,7 +3,9 @@ from rest_framework.exceptions import PermissionDenied
 from ..models import JobRun
 
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 def authenticate_job_run(request, run_id):
     auth_header = request.headers.get("Authorization")
