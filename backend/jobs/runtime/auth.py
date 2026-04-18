@@ -25,7 +25,7 @@ def authenticate_job_run(request, run_id):
 
     if not run.check_api_token(token):
         raise PermissionDenied("Invalid token")
-    
+
     logger.debug("AUTH HEADER: %s", auth_header)
     logger.debug("RUN ID: %s", run_id)
     logger.debug("RUN STATUS: %s", run.status)
