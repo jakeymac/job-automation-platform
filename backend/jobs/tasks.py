@@ -188,6 +188,8 @@ def execute_job_run(job_run_id):
         f"API_TOKEN={api_token}",
         "-e",
         f"JOB_API_URL={JOB_API_URL}",
+        "-e",
+        "PYTHONUNBUFFERED=1",
     ]
 
     try:
@@ -220,11 +222,16 @@ def execute_job_run(job_run_id):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
+            bufsize=1,
         )
 
         with open(log_path, "w") as log_file:
             for line in process.stdout:
                 log_file.write(line)
+                log_file.flush()
+            remaining_ouput = process.stdout.read()
+            if remaining_ouput:
+                log_file.write(remaining_ouput)
                 log_file.flush()
 
         process.wait()
