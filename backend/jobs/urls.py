@@ -56,7 +56,7 @@ urlpatterns = [
         name="set-job-run-email-content",
     ),
     path(
-        "runs/get_job_state/<int:job_id>/",
+        "runs/get_job_state/<int:run_id>/",
         GetJobStateView.as_view(),
         name="get-job-state",
     ),
