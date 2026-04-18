@@ -1,8 +1,8 @@
+import logging
+
 from rest_framework.exceptions import PermissionDenied
 
 from ..models import JobRun
-
-import logging
 
 logger = logging.getLogger(__name__)
 
