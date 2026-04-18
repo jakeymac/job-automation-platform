@@ -153,6 +153,28 @@ def execute_job_run(job_run_id):
     image = run.job.image
     if image in SUPPORTED_IMAGES:
         image = SUPPORTED_IMAGES[run.job.image]["image"]
+    
+    try:
+        logger.info(f"Pulling latest image: {image} for JobRun {run.id}")
+        subprocess.run(
+            ["docker", "pull", image],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        logger.error(
+            f"Error pulling image {image} for JobRun {run.id}: {e.stderr}"
+        )
+        with open(log_path, "a") as log_file:
+            log_file.write(f"Error pulling image {image}: {e.stderr}\n")
+        run.status = "FAILED"
+        run.finished_at = timezone.now()
+        run.duration_seconds = (run.finished_at - run.started_at).total_seconds()
+        run.save()
+        shutil.rmtree(job_dir_container, ignore_errors=True)
+        return
 
     api_token = create_api_token(run)
     JOB_API_URL = settings.INTERNAL_API_URL
