@@ -303,3 +303,4 @@ def execute_job_run(job_run_id):
             f"notification preference and run status."
         )
         run.email_status = "NOT REQUESTED"
+        run.save(update_fields=["email_status"])
