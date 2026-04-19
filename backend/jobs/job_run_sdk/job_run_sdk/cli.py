@@ -1,8 +1,15 @@
 import argparse
 import json
 import logging
+import sys
 
 from .client import get_job_state, set_job_run_email_content, set_job_run_state
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+    stream=sys.stdout,
+)
 
 logger = logging.getLogger(__name__)
 
