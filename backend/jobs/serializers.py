@@ -6,7 +6,8 @@ from .models import Job, JobRun
 class JobSerializer(serializers.ModelSerializer):
     notification_preference_display = serializers.CharField(
         source="get_notification_preference_display", read_only=True
-    )   
+    )
+
     class Meta:
         model = Job
         fields = "__all__"

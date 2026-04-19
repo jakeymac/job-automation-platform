@@ -18,7 +18,7 @@ class Job(models.Model):
     NOTIFICATION_CHOICES = [
         ("ALL", "All job runs"),
         ("CUSTOM", "Only for custom notifications requested in job"),
-        ("NONE", "No notifications")
+        ("NONE", "No notifications"),
     ]
     notification_preference = models.CharField(
         max_length=20, choices=NOTIFICATION_CHOICES, default="ALL"

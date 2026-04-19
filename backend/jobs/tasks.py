@@ -21,6 +21,7 @@ def create_api_token(run):
     run.save(update_fields=["api_token"])
     return token
 
+
 def should_send_notification(run):
     preference = run.job.notification_preference
     if preference == "ALL":
@@ -29,7 +30,7 @@ def should_send_notification(run):
         return run.status == "FAILED"
     elif preference == "CUSTOM":
         return bool(run.custom_email_content and run.custom_email_content.strip())
-    
+
     return False
 
 
@@ -292,7 +293,7 @@ def execute_job_run(job_run_id):
 
     shutil.rmtree(job_dir_container, ignore_errors=True)
 
-    # Determine if a notification email should be sent based 
+    # Determine if a notification email should be sent based
     # on the job's notification preference and status
     if should_send_notification(run):
         send_job_notification.delay(run.id)
