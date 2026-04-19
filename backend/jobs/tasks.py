@@ -297,3 +297,9 @@ def execute_job_run(job_run_id):
     # on the job's notification preference and status
     if should_send_notification(run):
         send_job_notification.delay(run.id)
+    else:
+        logger.info(
+            f"Notification email not sent for JobRun {run.id} due to "
+            f"notification preference and run status."
+        )
+        run.email_status = "NOT REQUESTED"

@@ -112,6 +112,8 @@ export default function ViewJobRun() {
                   Error: {run.email_error}
                 </span>
               </span>
+            ) : run.email_status === "NOT REQUESTED" ? (
+              <span style={{ color: "gray" }}>Not Requested By Preference</span>
             ) : (
               <span style={{ color: "orange" }}>{run.email_status}</span>
             )}

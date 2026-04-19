@@ -92,7 +92,7 @@ class JobRun(models.Model):
     )
     email_status = models.CharField(
         max_length=50,
-        choices=[("PENDING", "Pending"), ("SENT", "Sent"), ("FAILED", "Failed")],
+        choices=[("PENDING", "Pending"), ("SENT", "Sent"), ("FAILED", "Failed"), ("NOT REQUESTED", "Not Requested")],
         default="PENDING",
     )
     email_sent_at = models.DateTimeField(blank=True, null=True)
