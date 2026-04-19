@@ -12,6 +12,7 @@ interface Job {
   description: string
   schedule: string
   is_active: boolean
+  notification_preference_display: string
   command: string
   image: string
 }
@@ -198,6 +199,11 @@ export default function ViewJobDetails() {
       <div className="job-detail-row">
         <strong>Schedule:</strong>
         <span>{readableSchedule(job.schedule)}</span>
+      </div>
+
+      <div className="job-detail-row">
+        <strong>Notification Preference:</strong>
+        <span>{job.notification_preference_display}</span>
       </div>
 
       <div className="job-detail-row">

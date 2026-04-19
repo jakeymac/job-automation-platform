@@ -10,6 +10,7 @@ interface Job {
   description: string
   schedule: string
   is_active: boolean
+  notification_preference: string
   command: string
   image: string
 }
@@ -31,6 +32,7 @@ export default function EditJobPage() {
   const [description, setDescription] = useState("")
   const [schedule, setSchedule] = useState("")
   const [isActive, setIsActive] = useState(false)
+  const [notificationPreference, setNotificationPreference] = useState("ALL")
   const [useCustomImage, setUseCustomImage] = useState(false)
   const [selectedImage, setSelectedImage] = useState(SUPPORTED_IMAGES[0] || "")
   const [customImage, setCustomImage] = useState("")
@@ -64,6 +66,7 @@ export default function EditJobPage() {
         setDescription(data.description)
         setSchedule(data.schedule)
         setIsActive(data.is_active)
+        setNotificationPreference(data.notification_preference)
         if (SUPPORTED_IMAGES.includes(data.image)) {
           setSelectedImage(data.image)
           setUseCustomImage(false)
@@ -161,6 +164,7 @@ export default function EditJobPage() {
     formData.append("description", description)
     formData.append("schedule", schedule)
     formData.append("is_active", String(isActive))
+    formData.append("notification_preference", notificationPreference)
     if (useCustomImage) {
       formData.append("image", customImage)
     } else {
@@ -364,6 +368,21 @@ export default function EditJobPage() {
           onChange={(e) => setSchedule(e.target.value)}
           />
           <small>{readableSchedule(schedule)}</small>
+        </div>
+
+        <div className="form-field">
+          <label>Notification Preference</label>
+          <select
+            value={notificationPreference}
+            onChange={(e) => {
+              const value = e.target.value
+              setNotificationPreference(value)
+            }}
+          >
+            <option value="NONE">No notifications</option>
+            <option value="ALL">All job runs</option>
+            <option value="CUSTOM">Only for custom notifications requested in the job</option>
+          </select>
         </div>
 
         <div className="form-field checkbox-field">
