@@ -94,7 +94,6 @@ export default function ViewJobRun() {
           <div><strong>Finished:</strong> {run.finished_at || "-"}</div>
           <div><strong>Exit Code:</strong> {run.exit_code ?? "-"}</div>
           <div><strong>Duration:</strong> {run.duration_seconds !== null ? `${run.duration_seconds} seconds` : "-"}</div>
-          <div><strong>Triggered By:</strong> {run.triggered_by}</div>
           <div><strong>Trigger Type:</strong> {run.trigger_type}</div>
           <div>
             <strong>Email:</strong>{" "}
