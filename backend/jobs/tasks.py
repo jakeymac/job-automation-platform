@@ -24,10 +24,12 @@ def create_api_token(run):
 
 def should_send_notification(run):
     preference = run.job.notification_preference
+    if run.status == "FAILED":
+        return True
     if preference == "ALL":
         return True
     elif preference == "NONE":
-        return run.status == "FAILED"
+        return False
     elif preference == "CUSTOM":
         return bool(run.custom_email_content and run.custom_email_content.strip())
 
@@ -106,7 +108,7 @@ def send_job_notification(self, job_run_id):
     try:
         email = EmailMessage(
             subject=subject,
-            body=message,
+            body=message + f"\n\nTesting: {run.status}",
             from_email=settings.JOB_NOTIFICATION_EMAIL,
             to=recipient_list,
         )
@@ -295,7 +297,7 @@ def execute_job_run(job_run_id):
 
     # Determine if a notification email should be sent based
     # on the job's notification preference and status
-    if should_send_notification(run):
+    if should_send_notification(run) or run.email_status == "FAILED":
         send_job_notification.delay(run.id)
     else:
         logger.info(
