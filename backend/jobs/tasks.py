@@ -108,7 +108,7 @@ def send_job_notification(self, job_run_id):
     try:
         email = EmailMessage(
             subject=subject,
-            body=message + f"\n\nTesting: {run.status}",
+            body=message,
             from_email=settings.JOB_NOTIFICATION_EMAIL,
             to=recipient_list,
         )
@@ -297,7 +297,7 @@ def execute_job_run(job_run_id):
 
     # Determine if a notification email should be sent based
     # on the job's notification preference and status
-    if should_send_notification(run) or run.email_status == "FAILED":
+    if should_send_notification(run):
         send_job_notification.delay(run.id)
     else:
         logger.info(
