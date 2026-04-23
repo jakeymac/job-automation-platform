@@ -234,6 +234,12 @@ main {
   margin-top: 8px;
 }
 
+.auth-success {
+  color: #16a34a;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
 /* Loading spinner for login and register buttons */
 .spinner {
   width: 16px;

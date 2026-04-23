@@ -22,6 +22,9 @@ export default function RegisterPage() {
   const [passwordValid, setPasswordValid] = useState<boolean | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
+  const [registrationError, setRegistrationError] = useState("")
+  const [registrationSuccess, setRegistrationSuccess] = useState("")
+
   const formValid = 
     usernameValid === true && username !== "" &&
     emailValid === true && email !== "" &&
@@ -81,15 +84,14 @@ export default function RegisterPage() {
       })
 
       const data = await response.json()
-
       if (response.ok) {
-        alert("Account created successfully")
-        navigate("/login")
+        setRegistrationSuccess("Registration successful! Taking you to login page...")
+        setTimeout(() => {navigate("/login")}, 2000)
       } else {
-        alert("Registration failed: " + (data.detail || "Unknown error"))
+        setRegistrationError(data.detail || "Unknown error")
       }
     } catch {
-      alert("Registration request failed")
+      setRegistrationError("Registration failed, please try again.")
     } finally {
       setLoading(false)
     }
@@ -152,6 +154,7 @@ export default function RegisterPage() {
             onChange={(e) => {
               setUsername(e.target.value)
               setUsernameValid(null)
+              setRegistrationError("")
             }}
           />
           {checkingUsername && <span className="input-spinner"></span>}
@@ -174,6 +177,7 @@ export default function RegisterPage() {
               onChange={(e) => {
                 setEmail(e.target.value)
                 setEmailValid(null)
+                setRegistrationError("")
               }}
             />
             {checkingEmail && <span className="input-spinner"></span>}
@@ -193,7 +197,11 @@ export default function RegisterPage() {
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value)
+              setPasswordValid(null)
+              setRegistrationError("")
+            }}
           />
           {!passwordValid && password !== "" && (
             <span className="input-error-icon">✗</span>
@@ -212,6 +220,8 @@ export default function RegisterPage() {
           {loading ? <span className="spinner"></span> : "Register"}
         </button>
       </form>
+      {registrationError && <div className="auth-error">{registrationError}</div>}
+      {registrationSuccess && <div className="auth-success">Registration successful!</div>}
     </div>
   )
 }
