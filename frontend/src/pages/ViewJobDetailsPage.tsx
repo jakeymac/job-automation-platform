@@ -4,6 +4,7 @@ import { apiFetch } from "../api/client"
 import { usePageTitle } from "../hooks/usePageTitle"
 import { readableSchedule } from "../utils/cron"
 import StatusBadge from "../components/StatusBadge"
+import ConfirmationModal from "../components/ConfirmationModal"
 
 
 interface Job {
@@ -38,6 +39,7 @@ export default function ViewJobDetails() {
   const [jobRuns, setJobRuns] = useState<JobRun[]>([])
   const [loadingJobDetails, setLoadingJobDetails] = useState(true)
   const [loadingJobRuns, setLoadingJobRuns] = useState(true)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null)
 
   const navigate = useNavigate()
 
@@ -63,11 +65,11 @@ export default function ViewJobDetails() {
     }
   }
 
-  async function deleteJob() {
-    if (!confirm("Are you sure you want to delete this job?")) return
+  async function handleDeleteJob() {
+    if (confirmDeleteId === null) return
 
     try {
-      const response = await apiFetch(`/jobs/${id}/delete/`, {
+      const response = await apiFetch(`/jobs/${confirmDeleteId}/delete/`, {
         method: "DELETE",
       })
 
@@ -151,126 +153,135 @@ export default function ViewJobDetails() {
   }
 
   return (
-  <div className="job-details-page">
-    <div className="job-details-card">
+    <div className="job-details-page">
+      <div className="job-details-card">
 
-      <div className="job-header">
-        <div className="job-title-group">
-          <h1 className="job-title">{job.name}</h1>
+        <div className="job-header">
+          <div className="job-title-group">
+            <h1 className="job-title">{job.name}</h1>
 
-          <span className={`job-status-badge ${job.is_active ? "active" : "inactive"}`}>
-            {job.is_active ? "Active" : "Inactive"}
-          </span>
+            <span className={`job-status-badge ${job.is_active ? "active" : "inactive"}`}>
+              {job.is_active ? "Active" : "Inactive"}
+            </span>
+          </div>
+
+          <div className="job-actions">
+            <button
+              className="job-edit-btn"
+              onClick={() => navigate(`/jobs/${job.id}/edit`)}
+            >
+              Edit
+            </button>
+
+            <button className="job-run-btn" onClick={runJob}>
+              Run
+            </button>
+
+            <button className="job-delete-btn" onClick={() => setConfirmDeleteId(job?.id || null)}>
+              Delete
+            </button>
+          </div>
         </div>
 
-        <div className="job-actions">
-          <button
-            className="job-edit-btn"
-            onClick={() => navigate(`/jobs/${job.id}/edit`)}
-          >
-            Edit
-          </button>
-
-          <button className="job-run-btn" onClick={runJob}>
-            Run
-          </button>
-
-          <button className="job-delete-btn" onClick={deleteJob}>
-            Delete
-          </button>
+        <div className="job-detail-row">
+          <strong>Description:</strong>
+          <span>{job.description}</span>
         </div>
-      </div>
 
-      <div className="job-detail-row">
-        <strong>Description:</strong>
-        <span>{job.description}</span>
-      </div>
-
-      <div className="job-detail-row">
-        <strong>Command:</strong>
-        <div className="command-box">{job.command}</div>
-      </div>
-
-      <div className="job-detail-row">
-        <strong>Docker Image:</strong>
-        <span>{job.image}</span>
-      </div>
-
-      <div className="job-detail-row">
-        <strong>Schedule:</strong>
-        <span>{readableSchedule(job.schedule)}</span>
-      </div>
-
-      <div className="job-detail-row">
-        <strong>Notification Preference:</strong>
-        <span>{job.notification_preference_display}</span>
-      </div>
-
-      <div className="job-detail-row">
-        <strong>Files:</strong>
-        <div className="file-list">
-          {files.length === 0 && <span>No files uploaded</span>}
-          {files.map((file, index) => {
-            const name = file.filename
-              ? file.filename.split("/").pop()
-              : file.file?.split("/").pop() || "(no name)"
-
-            return (
-              <div className="file-item" key={`${file.id ?? 'temp'}-${index}`}>
-                <span className="file-icon">📄</span>
-                <span className="file-name">{name}</span>
-              </div>
-            )
-          })}
+        <div className="job-detail-row">
+          <strong>Command:</strong>
+          <div className="command-box">{job.command}</div>
         </div>
+
+        <div className="job-detail-row">
+          <strong>Docker Image:</strong>
+          <span>{job.image}</span>
+        </div>
+
+        <div className="job-detail-row">
+          <strong>Schedule:</strong>
+          <span>{readableSchedule(job.schedule)}</span>
+        </div>
+
+        <div className="job-detail-row">
+          <strong>Notification Preference:</strong>
+          <span>{job.notification_preference_display}</span>
+        </div>
+
+        <div className="job-detail-row">
+          <strong>Files:</strong>
+          <div className="file-list">
+            {files.length === 0 && <span>No files uploaded</span>}
+            {files.map((file, index) => {
+              const name = file.filename
+                ? file.filename.split("/").pop()
+                : file.file?.split("/").pop() || "(no name)"
+
+              return (
+                <div className="file-item" key={`${file.id ?? 'temp'}-${index}`}>
+                  <span className="file-icon">📄</span>
+                  <span className="file-name">{name}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+
       </div>
+      <div className="job-runs-card">
+        <h2>Recent Runs</h2>
 
-
-    </div>
-    <div className="job-runs-card">
-      <h2>Recent Runs</h2>
-
-      {loadingJobRuns ? (
-        <p>Loading job runs...</p>
-      ) : jobRuns.length === 0 ? (
-        <p>No runs yet</p>
-      ) : (
-        <table className="job-runs-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Status</th>
-              <th>Started At</th>
-              <th>Finished At</th>
-              <th>Duration (s)</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          
-          <tbody>
-            {jobRuns.map((run) => (
-              <tr key={run.id}>
-                <td>{run.id}</td>
-                <td>
-                  <StatusBadge status={run.status}/>
-                </td>
-                <td>{run.started_at ? new Date(run.started_at).toLocaleString() : "N/A"}</td>
-                <td>{run.finished_at ? new Date(run.finished_at).toLocaleString() : "N/A"}</td>
-                <td>{run.duration_seconds !== null ? run.duration_seconds.toFixed(2) : "N/A"}</td>
-                <td>
-                  <button
-                    className="view-job-run-btn"
-                    onClick={() => navigate(`/jobs/runs/${run.id}`)}
-                  >
-                    View
-                  </button>
-                </td>
+        {loadingJobRuns ? (
+          <p>Loading job runs...</p>
+        ) : jobRuns.length === 0 ? (
+          <p>No runs yet</p>
+        ) : (
+          <table className="job-runs-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Status</th>
+                <th>Started At</th>
+                <th>Finished At</th>
+                <th>Duration (s)</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            
+            <tbody>
+              {jobRuns.map((run) => (
+                <tr key={run.id}>
+                  <td>{run.id}</td>
+                  <td>
+                    <StatusBadge status={run.status}/>
+                  </td>
+                  <td>{run.started_at ? new Date(run.started_at).toLocaleString() : "N/A"}</td>
+                  <td>{run.finished_at ? new Date(run.finished_at).toLocaleString() : "N/A"}</td>
+                  <td>{run.duration_seconds !== null ? run.duration_seconds.toFixed(2) : "N/A"}</td>
+                  <td>
+                    <button
+                      className="view-job-run-btn"
+                      onClick={() => navigate(`/jobs/runs/${run.id}`)}
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+      {confirmDeleteId && (
+        <ConfirmationModal
+          isOpen={true}
+          message="Are you sure you want to delete this job?"
+          onCancel={() => setConfirmDeleteId(null)}
+          onConfirm={handleDeleteJob}
+        />
       )}
     </div>
-  </div>
-)
+    
+  )
 }

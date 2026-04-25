@@ -4,6 +4,7 @@ import { apiFetch } from "../api/client"
 import { usePageTitle } from "../hooks/usePageTitle"
 import { useRequireAuth } from "../hooks/useRequireAuth"
 import StatusBadge from "../components/StatusBadge"
+import ConfirmationModal from "../components/ConfirmationModal"
 
 interface Job {
   id: number
@@ -17,6 +18,7 @@ export default function JobsPage() {
   const { isAuthenticated, authLoading } = useRequireAuth()
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null)
 
   const navigate = useNavigate()
 
@@ -79,13 +81,11 @@ export default function JobsPage() {
     }
   }
 
-  async function handleDeleteJob(jobId: number) {
-    if (!window.confirm("Are you sure you want to delete this job?")) {
-      return
-    }
-    
+  async function handleDeleteJob() {
+    if (confirmDeleteId === null) return
+
     try {
-      const response = await apiFetch(`/jobs/${jobId}/delete/`, {
+      const response = await apiFetch(`/jobs/${confirmDeleteId}/delete/`, {
         method: "DELETE",
       })
 
@@ -144,12 +144,20 @@ export default function JobsPage() {
               <td>
                 <button onClick={() => handleRunJob(job.id)} className="run-job-btn">Run</button>
                 <button onClick={() => navigate(`/jobs/${job.id}`)} className="view-job-btn">View</button>
-                <button onClick={() => handleDeleteJob(job.id)} className="job-delete-btn">Delete</button>
+                <button onClick={() => setConfirmDeleteId(job.id)} className="job-delete-btn">Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      { confirmDeleteId && (
+        <ConfirmationModal
+          isOpen={true}
+          message="Are you sure you want to delete this job?"
+          onCancel={() => setConfirmDeleteId(null)}
+          onConfirm={handleDeleteJob}
+        />
+      )}
     </div>
   )
 }
