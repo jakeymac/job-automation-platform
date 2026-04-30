@@ -39,8 +39,7 @@ export default function ViewJobDetails() {
   const [jobRuns, setJobRuns] = useState<JobRun[]>([])
   const [loadingJobDetails, setLoadingJobDetails] = useState(true)
   const [loadingJobRuns, setLoadingJobRuns] = useState(true)
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null)
-
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const navigate = useNavigate()
 
   usePageTitle(loadingJobDetails ? "Loading job..." : job ? `Job Details - ${job.name}` : "Job not found")
@@ -66,10 +65,8 @@ export default function ViewJobDetails() {
   }
 
   async function handleDeleteJob() {
-    if (confirmDeleteId === null) return
-
     try {
-      const response = await apiFetch(`/jobs/${confirmDeleteId}/delete/`, {
+      const response = await apiFetch(`/jobs/${id}/delete/`, {
         method: "DELETE",
       })
 
@@ -177,7 +174,7 @@ export default function ViewJobDetails() {
               Run
             </button>
 
-            <button className="job-delete-btn" onClick={() => setConfirmDeleteId(job?.id || null)}>
+            <button className="job-delete-btn" onClick={() => setDeleteModalOpen(true)}>
               Delete
             </button>
           </div>
@@ -273,14 +270,13 @@ export default function ViewJobDetails() {
           </table>
         )}
       </div>
-      {confirmDeleteId && (
-        <ConfirmationModal
-          isOpen={true}
-          message="Are you sure you want to delete this job?"
-          onCancel={() => setConfirmDeleteId(null)}
-          onConfirm={handleDeleteJob}
-        />
-      )}
+      <ConfirmationModal
+        isOpen={deleteModalOpen}
+        title="Confirm Delete"
+        message="Are you sure you want to delete this job?"
+        onConfirm={handleDeleteJob}
+        onCancel={() => setDeleteModalOpen(false)}
+      />
     </div>
     
   )
