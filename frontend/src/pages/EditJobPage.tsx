@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { apiFetch } from "../api/client"
 import { readableSchedule } from "../utils/cron"
 import { usePageTitle } from "../hooks/usePageTitle"
+import { useToast } from "../context/ToastContext"
 
 interface Job {
   id: number
@@ -40,6 +41,8 @@ export default function EditJobPage() {
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([])
   const [uploading, setUploading] = useState(false)
+
+  const { showToast } = useToast()
   
   usePageTitle(isCreate ? "Create New Job" : job ? `Edit Job - ${job?.name || ""}` : "Edit Job")
 
@@ -119,7 +122,7 @@ export default function EditJobPage() {
       setUploadedFiles((prev) => [...prev, newFile])
     } catch (err) {
       console.error(err)
-      alert("File upload failed")
+      showToast({ message: "File upload failed", type: "error" })
     } finally {
       setUploading(false)
     }
@@ -141,7 +144,7 @@ export default function EditJobPage() {
       setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId))
     } catch (err) {
       console.error(err)
-      alert("Failed to delete file")
+      showToast({ message: "Failed to delete file", type: "error" })
     }
   }
     
@@ -193,6 +196,7 @@ export default function EditJobPage() {
               
             } catch (err) {
               console.error("File upload failed after create", err)
+              showToast({ message: "File upload failed", type: "error" })
             }
           })
           
@@ -202,7 +206,7 @@ export default function EditJobPage() {
         navigate(`/jobs/${id}`)
       }
     } catch {
-      alert("Failed to save job")
+      showToast({ message: "Failed to save job", type: "error" })
     } finally {
       setSaving(false)
     }

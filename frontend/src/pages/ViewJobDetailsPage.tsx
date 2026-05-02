@@ -5,6 +5,7 @@ import { usePageTitle } from "../hooks/usePageTitle"
 import { readableSchedule } from "../utils/cron"
 import StatusBadge from "../components/StatusBadge"
 import ConfirmationModal from "../components/ConfirmationModal"
+import { useToast } from "../context/ToastContext"
 
 
 interface Job {
@@ -40,7 +41,9 @@ export default function ViewJobDetails() {
   const [loadingJobDetails, setLoadingJobDetails] = useState(true)
   const [loadingJobRuns, setLoadingJobRuns] = useState(true)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  
   const navigate = useNavigate()
+  const { showToast } = useToast()
 
   usePageTitle(loadingJobDetails ? "Loading job..." : job ? `Job Details - ${job.name}` : "Job not found")
 
@@ -77,7 +80,7 @@ export default function ViewJobDetails() {
       navigate("/")
     } catch (error) {
       console.error("Failed to delete job:", error)
-      alert("Failed to delete job")
+      showToast({ message: "Failed to delete job", type: "error" })
     }
   }
 
@@ -274,7 +277,10 @@ export default function ViewJobDetails() {
         isOpen={deleteModalOpen}
         title="Confirm Delete"
         message="Are you sure you want to delete this job?"
-        onConfirm={handleDeleteJob}
+        onConfirm={() => {
+          handleDeleteJob()
+          setDeleteModalOpen(false)
+        }}
         onCancel={() => setDeleteModalOpen(false)}
       />
     </div>

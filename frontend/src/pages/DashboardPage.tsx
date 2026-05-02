@@ -5,6 +5,7 @@ import { usePageTitle } from "../hooks/usePageTitle"
 import { useRequireAuth } from "../hooks/useRequireAuth"
 import StatusBadge from "../components/StatusBadge"
 import ConfirmationModal from "../components/ConfirmationModal"
+import { useToast } from "../context/ToastContext"
 
 interface Job {
   id: number
@@ -22,6 +23,7 @@ export default function JobsPage() {
   const [jobIDToDelete, setJobIDToDelete] = useState<number | null>(null)
 
   const navigate = useNavigate()
+  const { showToast } = useToast()
 
   usePageTitle("Home")
 
@@ -78,7 +80,7 @@ export default function JobsPage() {
       setJobs(data)
     } catch (err) {
       console.error("Failed to run job", err)
-      alert("Failed to run job")
+      showToast({ message: "Failed to run job", type: "error" })
     }
   }
 
@@ -99,7 +101,7 @@ export default function JobsPage() {
       setJobs(data)
     } catch (err) {
       console.error("Failed to delete job", err)
-      alert("Failed to delete job")
+      showToast({ message: "Failed to delete job", type: "error" })
     }
   }
 
@@ -162,7 +164,10 @@ export default function JobsPage() {
         isOpen={deleteModalOpen}
         title="Confirm Delete"
         message="Are you sure you want to delete this job?"
-        onConfirm={handleDeleteJob}
+        onConfirm={() => {
+          handleDeleteJob()
+          setDeleteModalOpen(false)
+        }}
         onCancel={() => setDeleteModalOpen(false)}
       />
     </div>
