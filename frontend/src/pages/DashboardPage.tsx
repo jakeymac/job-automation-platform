@@ -106,7 +106,14 @@ export default function JobsPage() {
   }
 
   if (loading) {
-    return <p>Loading jobs...</p>
+    return (
+    <div>
+      <p>Loading jobs...</p>
+      <div className="spinner-container">
+        <span className="spinner large dark"></span>
+      </div>
+    </div>
+    )
   }
 
   return (

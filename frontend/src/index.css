@@ -251,6 +251,23 @@ main {
   box-sizing: border-box;
 }
 
+.spinner.dark {
+  border: 2px solid rgba(37, 99, 235, 0.3);
+  border-top-color: #2563eb;
+}
+
+.spinner.large {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -456,6 +473,8 @@ main {
   margin-bottom: 16px;
 }
 
+
+
 /* Edit Job Page */
 
 .job-edit-card {
@@ -652,7 +671,6 @@ main {
   color: white;
 }
 /* Job Runs Section */
-
 .job-runs-card {
   margin-top: 30px;
   width: 100%;

@@ -78,7 +78,14 @@ export default function ViewJobRun() {
   }, [logs])
 
   if (loading) {
-    return <div className="job-run-page">Loading run details...</div>
+    return (
+      <div className="job-run-page">
+        <p>Loading run details...</p>
+        <div className="spinner-container">
+          <span className="spinner large dark"></span>
+        </div>
+      </div>
+    )
   }
   if (!run) return <div className="job-run-page">Run not found</div>
 

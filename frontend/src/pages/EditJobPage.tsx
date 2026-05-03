@@ -213,7 +213,14 @@ export default function EditJobPage() {
   }
 
   if (loading) {
-    return <div className="job-details-page">Loading job...</div>
+    return (
+      <div className="job-details-page">
+        <p>Loading job details...</p>
+        <div className="spinner-container">
+          <span className="spinner large dark"></span>
+        </div>
+      </div>
+    )
   }
 
   if (!isCreate && !job) {

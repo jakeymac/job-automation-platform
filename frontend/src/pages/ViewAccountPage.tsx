@@ -79,7 +79,16 @@ export default function ViewAccountPage() {
     loadUser()
   }, [])
 
-  if (loading) return <div>Loading...</div>
+  if (loading) {
+    return (
+      <div>
+        <p>Loading account details...</p>
+        <div className="spinner-container">
+          <span className="spinner large dark"></span>
+        </div>
+      </div>
+    )
+  }
   if (!user) return <div>Failed to load account details.</div>
 
   return (

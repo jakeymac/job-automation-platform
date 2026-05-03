@@ -145,7 +145,15 @@ export default function ViewJobDetails() {
   }, [id])
 
   if (loadingJobDetails) {
-    return <div className="job-details-page">Loading job details...</div>
+    return (
+      <div className="job-details-page">
+        <p>Loading job details...</p>
+        <div className="spinner-container">
+          <span className="spinner large dark"></span>
+        </div>
+        
+      </div>
+    )
   }
 
   if (!job) {
@@ -233,7 +241,9 @@ export default function ViewJobDetails() {
         <h2>Recent Runs</h2>
 
         {loadingJobRuns ? (
-          <p>Loading job runs...</p>
+          <div className="spinner-container">
+            <span className="spinner dark"></span>
+          </div>
         ) : jobRuns.length === 0 ? (
           <p>No runs yet</p>
         ) : (
